@@ -49,6 +49,9 @@ class FoodDetailsScreen extends StatelessWidget {
           },
           icon: Icon(Icons.add_circle_outline_rounded),
           label: Text('Adicionar', style: TextStyle(fontWeight: FontWeight.w600)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(50),
+          ),
           backgroundColor: Colors.black,
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
