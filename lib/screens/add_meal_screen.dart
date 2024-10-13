@@ -35,14 +35,25 @@ class _AddMealScreenState extends State<AddMealScreen> {
   }
 
   Future<void> _searchFood(String query) async {
-    if (query.isEmpty) {
+    if (query.isEmpty && _selectedCategory == null) {
       setState(() {
         _searchResults = [];
       });
       return;
     }
 
-    final results = await _tacoDao.searchFoodByName(query);
+    List<Map<String, dynamic>> results;
+    if (_selectedCategory != null) {
+      results = await _tacoDao.getFoodsByCategory(_selectedCategory!);
+      if (query.isNotEmpty) {
+        results = results.where((food) => 
+          food['Nome'].toString().toLowerCase().contains(query.toLowerCase())
+        ).toList();
+      }
+    } else {
+      results = await _tacoDao.searchFoodByName(query);
+    }
+
     setState(() {
       _searchResults = results;
     });
@@ -93,28 +104,49 @@ class _AddMealScreenState extends State<AddMealScreen> {
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
-                children: _categories.map((category) {
-                  return Padding(
+                children: [
+                  Padding(
                     padding: const EdgeInsets.only(left: 20),
                     child: ElevatedButton(
                       onPressed: () {
                         setState(() {
-                          _selectedCategory = category;
+                          _selectedCategory = null;
                         });
                         _searchFood(_searchController.text);
                       },
                       style: ElevatedButton.styleFrom(
-                         backgroundColor: _selectedCategory == category ? Colors.blue : Colors.white,
-                         foregroundColor: _selectedCategory == category ? Colors.white : Colors.black,
+                        backgroundColor: _selectedCategory == null ? Colors.black : Colors.white,
+                        foregroundColor: _selectedCategory == null ? Colors.white : Colors.black,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      child: Text(category),
+                      child: Text('Todos'),
                     ),
-                  );
-                }).toList(),
-              ),
+                  ),
+                  ..._categories.map((category) {
+                    return Padding(
+                      padding: const EdgeInsets.only(left: 10),
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: _selectedCategory == category ? Colors.black : Colors.white,
+                          foregroundColor: _selectedCategory == category ? Colors.white : Colors.black,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _selectedCategory = category;
+                          });
+                          _searchFood(_searchController.text);
+                        },
+                        child: Text(category),
+                      ),
+                    );
+                  }).toList(),
+                ],
+              ),  
             ),
             Expanded(
               child: ListView.builder(
@@ -123,7 +155,6 @@ class _AddMealScreenState extends State<AddMealScreen> {
                   final food = _searchResults[index];
                   return FoodItemCard(food: food);
                 },
-                
               ),
             ),
           ],
