@@ -1,25 +1,54 @@
 import 'package:flutter/foundation.dart';
-import '../models/taco_meal.dart';
+import 'package:macro_counter/data/taco_meal_dao.dart';
+import 'package:macro_counter/models/taco_meal.dart';
 
 class TacoMealProvider with ChangeNotifier {
+  final TacoMealDao _tacoMealDao;
   List<TacoMeal> _meals = [];
+
+  TacoMealProvider(this._tacoMealDao);
 
   List<TacoMeal> get meals => _meals;
 
-  void addMeal(TacoMeal meal) {
-    _meals.add(meal);
+  Future<void> loadMeals(DateTime date) async {
+    _meals = await _tacoMealDao.getMealsByDate(date);
     notifyListeners();
   }
 
-  void removeMeal(TacoMeal meal) {
-    _meals.remove(meal);
+  Future<void> addMeal(TacoMeal meal) async {
+    final id = await _tacoMealDao.insert(meal);
+    final newMeal = TacoMeal(
+      id: id,
+      food: meal.food,
+      quantity: meal.quantity,
+      mealType: meal.mealType,
+      date: meal.date,
+    );
+    _meals.add(newMeal);
+    notifyListeners();
+  }
+
+  Future<void> updateMeal(TacoMeal meal) async {
+    await _tacoMealDao.update(meal);
+    final index = _meals.indexWhere((m) => m.id == meal.id);
+    if (index != -1) {
+      _meals[index] = meal;
+      notifyListeners();
+    }
+  }
+
+  Future<void> deleteMeal(int id) async {
+    await _tacoMealDao.delete(id);
+    _meals.removeWhere((meal) => meal.id == id);
     notifyListeners();
   }
 
   List<TacoMeal> getMealsByTypeAndDate(String mealType, DateTime date) {
-    return _meals.where((meal) => 
-      meal.mealType == mealType && 
-      isSameDay(meal.date, date)
+    return _meals.where((meal) =>
+      meal.mealType == mealType &&
+      meal.date.year == date.year &&
+      meal.date.month == date.month &&
+      meal.date.day == date.day
     ).toList();
   }
 
@@ -27,11 +56,5 @@ class TacoMealProvider with ChangeNotifier {
     return getMealsByTypeAndDate(mealType, date).fold(
       0, (sum, meal) => sum + meal.food.energia * meal.quantity
     );
-  }
-
-  bool isSameDay(DateTime date1, DateTime date2) {
-    return date1.year == date2.year && 
-           date1.month == date2.month && 
-           date1.day == date2.day;
   }
 }

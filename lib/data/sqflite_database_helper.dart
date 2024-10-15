@@ -47,6 +47,9 @@ class SqfliteDatabaseHelper implements DatabaseHelper {
     await db.execute(
       "CREATE TABLE IF NOT EXISTS meal ( id INTEGER PRIMARY KEY, datetime DATETIME NOT NULL, quantity REAL NOT NULL, foodId INTEGER NOT NULL);"
     );
+    await db.execute(
+      "CREATE TABLE IF NOT EXISTS taco_meal ( id INTEGER PRIMARY KEY AUTOINCREMENT, food_name TEXT NOT NULL, energia REAL, proteina REAL, lipideos REAL, carboidrato REAL, categoria TEXT, quantity REAL NOT NULL, meal_type TEXT NOT NULL, date TEXT NOT NULL);"
+    );
   }
 
   @override

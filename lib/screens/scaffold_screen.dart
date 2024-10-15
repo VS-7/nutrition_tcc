@@ -86,7 +86,7 @@ class _ScaffoldScreenState extends State<ScaffoldScreen> {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: Color(0xFFA7E100).withOpacity(0.2),
+                    color: Colors.black.withOpacity(0.2),
                     spreadRadius: 2,
                     blurRadius: 8,
                     offset: const Offset(0, 3),
@@ -97,7 +97,7 @@ class _ScaffoldScreenState extends State<ScaffoldScreen> {
                 onPressed: () {
                   screens[selectedIndex]["fabAction"](context);
                 },
-                backgroundColor: Color(0xFFA7E100),
+                backgroundColor: Colors.black,
                 foregroundColor: Colors.white,
                 elevation: 0,
                 shape: const CircleBorder(),
@@ -105,28 +105,50 @@ class _ScaffoldScreenState extends State<ScaffoldScreen> {
               ),
             ),
       
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.menu_book),
-            label: 'Diário',
+       bottomNavigationBar: Container(
+          decoration: BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.1),
+                spreadRadius: 0,
+                blurRadius: 10,
+                offset: Offset(0, -3),
+              ),
+            ],
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.fastfood),
-            label: 'Foods',
+          child: ClipRRect(
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(80.0),
+              topRight: Radius.circular(80.0),
+            ),
+            child: BottomNavigationBar(
+              items: const <BottomNavigationBarItem>[
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.menu_book),
+                  label: 'Diário',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.fastfood),
+                  label: 'Foods',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.person),
+                  label: 'Perfil',
+                ),
+              ],
+              currentIndex: selectedIndex,
+              selectedItemColor: Color(0xFFA7E100),
+              unselectedItemColor: Colors.grey[400],
+              backgroundColor: Colors.black,
+              elevation: 0,
+              onTap: (int index) {
+                setState(() {
+                  selectedIndex = index;
+                });
+              },
+            ),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Perfil',
-          ),
-        ],
-        currentIndex: selectedIndex,
-        onTap: (int index) {
-          setState(() {
-            selectedIndex = index;
-          });
-        },
-      ),
+        ),
       ),
     );
   }

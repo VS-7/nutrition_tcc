@@ -40,7 +40,7 @@ class MealPlanner extends StatelessWidget {
                   ),
                 ],
               ),
-              child: Column(
+             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(

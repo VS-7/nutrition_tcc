@@ -15,6 +15,7 @@ import 'package:macro_counter/providers/id_provider_dt.dart';
 import 'package:macro_counter/providers/meal_provider.dart';
 import 'package:macro_counter/providers/user_settings_provider.dart';
 import 'package:macro_counter/providers/taco_meal_provider.dart';
+import 'package:macro_counter/data/taco_meal_dao.dart';
 import 'package:macro_counter/screens/scaffold_screen.dart';
 import 'package:macro_counter/screens/onboarding_screen.dart';
 import 'package:macro_counter/screens/welcome_screen.dart';
@@ -46,7 +47,8 @@ class MyApp extends StatelessWidget {
     UserSettingsProvider userSettingsProvider =
         UserSettingsProvider(userSettingsDao);
     IdProviderDt idProvider = IdProviderDt();
-    TacoMealProvider tacoMealProvider = TacoMealProvider();
+    TacoMealDao tacoMealDao = TacoMealDao(sqfliteHelper);
+    TacoMealProvider tacoMealProvider = TacoMealProvider(tacoMealDao);
 
     return MultiProvider(
       providers: [

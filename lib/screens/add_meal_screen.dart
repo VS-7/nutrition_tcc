@@ -5,6 +5,7 @@ import '../widgets/food_item_card.dart';
 import '../models/taco_food.dart';
 import '../models/taco_meal.dart';
 import '../providers/taco_meal_provider.dart';
+import '../screens/selected_foods_screen.dart';
 import 'package:provider/provider.dart';
 
 class AddMealScreen extends StatefulWidget {
@@ -25,12 +26,13 @@ class _AddMealScreenState extends State<AddMealScreen> {
   List<String> _categories = [];
   String? _selectedCategory;
   List<TacoFood> _searchResults = [];
+  List<TacoMeal> _selectedFoods = [];
 
   @override
   void initState() {
     super.initState();
     _loadCategories();
-    _loadAllFoods(); // Carrega todos os alimentos inicialmente
+    _loadAllFoods();
   }
 
   Future<void> _loadCategories() async {
@@ -75,53 +77,84 @@ class _AddMealScreenState extends State<AddMealScreen> {
       context: context,
       builder: (context) {
         double quantity = 100;
-        return AlertDialog(
-          title: Text('Adicionar ${food.nome}'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('Quantidade (g):'),
-              Slider(
-                value: quantity,
-                min: 0,
-                max: 500,
-                divisions: 50,
-                onChanged: (value) {
-                  setState(() {
-                    quantity = value;
-                  });
-                },
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text('Adicionar ${food.nome}'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('Quantidade (g):'),
+                  Slider(
+                    value: quantity,
+                    min: 0,
+                    max: 500,
+                    divisions: 50,
+                    onChanged: (value) {
+                      setState(() {
+                        quantity = value;
+                      });
+                    },
+                  ),
+                  Text('${quantity.toStringAsFixed(0)}g'),
+                ],
               ),
-              Text('${quantity.toStringAsFixed(0)}g'),
-            ],
-          ),
-          actions: [
-            TextButton(
-              child: Text('Cancelar'),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-            TextButton(
-              child: Text('Adicionar'),
-              onPressed: () {
-                final mealProvider = Provider.of<TacoMealProvider>(context, listen: false);
-                final newMeal = TacoMeal(
-                  id: DateTime.now().millisecondsSinceEpoch,
-                  food: food,
-                  quantity: quantity / 100,
-                  mealType: widget.mealType,
-                  date: widget.selectedDate,
-                );
-                mealProvider.addMeal(newMeal);
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
+              actions: [
+                TextButton(
+                  child: Text('Cancelar'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                TextButton(
+                  child: Text('Adicionar'),
+                  onPressed: () {
+                    final meal = TacoMeal(
+                      id: 0,
+                      food: food,
+                      quantity: quantity / 100,
+                      mealType: widget.mealType,
+                      date: widget.selectedDate,
+                    );
+                    setState(() {
+                      _selectedFoods.add(meal);
+                    });
+                    Navigator.of(context).pop();
+                    // Atualiza o estado da tela principal
+                    this.setState(() {});
+                  },
+                ),
+              ],
+            );
+          },
         );
       },
     );
   }
 
+  void _saveMeals() {
+    final mealProvider = Provider.of<TacoMealProvider>(context, listen: false);
+    for (var meal in _selectedFoods) {
+      mealProvider.addMeal(meal);
+    }
+    Navigator.of(context).pop();
+  }
+
+  void _openSelectedFoodsScreen() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => SelectedFoodsScreen(
+          selectedFoods: _selectedFoods,
+          onRemove: (meal) {
+            setState(() {
+              _selectedFoods.remove(meal);
+            });
+          },
+        ),
+      ),
+    );
+  }
+  
   @override
   Widget build(BuildContext context) {
     return BackgroundContainer(
@@ -139,6 +172,34 @@ class _AddMealScreenState extends State<AddMealScreen> {
           backgroundColor: Colors.transparent,
           foregroundColor: Colors.black,
           elevation: 0,
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right: 16.0),
+              child: GestureDetector(
+                onTap: _openSelectedFoodsScreen,
+                child: Center(
+                  child: Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.black, width: 2),
+                    ),
+                    child: Center(
+                      child: Text(
+                        '${_selectedFoods.length}',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
         body: Column(
           children: [
@@ -225,6 +286,17 @@ class _AddMealScreenState extends State<AddMealScreen> {
             ),
           ],
         ),
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: _saveMeals,
+          label: Text('Pronto'),
+          backgroundColor: Colors.black,
+          foregroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(50),
+          ),
+          //icon: Icon(Icons.check),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       ),
     );
   }
