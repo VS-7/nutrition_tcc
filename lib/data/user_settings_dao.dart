@@ -15,6 +15,13 @@ class UserSettingsDao implements IoDao<UserSettings> {
       await database.setDouble("carbGoal", item.carbGoal);
       await database.setDouble("proteinGoal", item.proteinGoal);
       await database.setDouble("fatGoal", item.fatGoal);
+      await database.setBool("onboardingCompleted", item.onboardingCompleted);
+      await database.setInt("age", item.age);
+      await database.setDouble("weight", item.weight);
+      await database.setDouble("height", item.height);
+      await database.setString("gender", item.gender);
+      await database.setString("activityLevel", item.activityLevel);
+      await database.setString("goal", item.goal);
       return 1;
     } catch (_) {
       return 0;
@@ -28,6 +35,26 @@ class UserSettingsDao implements IoDao<UserSettings> {
     final double carbGoal = database.getDouble("carbGoal") ?? 255;
     final double proteinGoal = database.getDouble("proteinGoal") ?? 150;
     final double fatGoal = database.getDouble("fatGoal") ?? 138;
-    return UserSettings(calorieGoal, carbGoal, proteinGoal, fatGoal);
+    final bool onboardingCompleted = database.getBool("onboardingCompleted") ?? false;
+    final int age = database.getInt("age") ?? 0;
+    final double weight = database.getDouble("weight") ?? 0;
+    final double height = database.getDouble("height") ?? 0;
+    final String gender = database.getString("gender") ?? "";
+    final String activityLevel = database.getString("activityLevel") ?? "";
+    final String goal = database.getString("goal") ?? "";
+
+    return UserSettings(
+      calorieGoal: calorieGoal,
+      carbGoal: carbGoal,
+      proteinGoal: proteinGoal,
+      fatGoal: fatGoal,
+      onboardingCompleted: onboardingCompleted,
+      age: age,
+      weight: weight,
+      height: height,
+      gender: gender,
+      activityLevel: activityLevel,
+      goal: goal,
+    );
   }
 }

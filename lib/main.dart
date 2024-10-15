@@ -15,6 +15,7 @@ import 'package:macro_counter/providers/id_provider_dt.dart';
 import 'package:macro_counter/providers/meal_provider.dart';
 import 'package:macro_counter/providers/user_settings_provider.dart';
 import 'package:macro_counter/screens/scaffold_screen.dart';
+import 'package:macro_counter/screens/onboarding_screen.dart';
 import 'package:provider/provider.dart';
 import 'theme/app_theme.dart';
 
@@ -54,7 +55,18 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Macro Tracker',
         theme: AppTheme.themeData,
-        home: ScaffoldScreen(),
+        home: FutureBuilder<UserSettings?>(
+          future: userSettingsProvider.object,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator();
+            } else if (snapshot.hasData && snapshot.data!.onboardingCompleted) {
+              return ScaffoldScreen();
+            } else {
+              return OnboardingScreen();
+            }
+          },
+        ),
       ),
     );
   }

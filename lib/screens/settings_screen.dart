@@ -3,245 +3,100 @@ import 'package:macro_counter/models/user_settings.dart';
 import 'package:macro_counter/providers/user_settings_provider.dart';
 import 'package:provider/provider.dart';
 
-class SettingsScreen extends StatelessWidget {
-  const SettingsScreen({super.key});
-
-  Future<void> _onSubmit(
-    BuildContext context,
-    UserSettings userSettings,
-  ) async {
-    final UserSettingsProvider provider =
-        Provider.of<UserSettingsProvider>(context, listen: false);
-    await provider.addObject(userSettings);
-  }
+class SettingsScreen extends StatefulWidget {
+  const SettingsScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final provider = Provider.of<UserSettingsProvider>(context);
-    return FutureBuilder(
-        future: provider.object,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasData) {
-            final data = snapshot.data;
-            double calorieGoal = data!.calorieGoal;
-            double carbGoal = data.carbGoal;
-            double proteinGoal = data.proteinGoal;
-            double fatGoal = data.fatGoal;
-            return Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  Expanded(
-                    child: Column(
-                      children: [
-                        TextFormField(
-                          keyboardType: TextInputType.numberWithOptions(),
-                          initialValue: calorieGoal.toString(),
-                          decoration:
-                              const InputDecoration(labelText: 'Calorie Goal'),
-                          onChanged: (value) {
-                            calorieGoal = double.parse(value);
-                          },
-                        ),
-                        const SizedBox(
-                          height: 8,
-                        ),
-                        TextFormField(
-                          keyboardType: TextInputType.numberWithOptions(),
-                          initialValue: carbGoal.toString(),
-                          decoration:
-                              const InputDecoration(labelText: 'Carb Goal'),
-                          onChanged: (value) {
-                            carbGoal = double.parse(value);
-                          },
-                        ),
-                        const SizedBox(
-                          height: 8,
-                        ),
-                        TextFormField(
-                          keyboardType: TextInputType.numberWithOptions(),
-                          initialValue: proteinGoal.toString(),
-                          decoration:
-                              const InputDecoration(labelText: 'Protein Goal'),
-                          onChanged: (value) {
-                            proteinGoal = double.parse(value);
-                          },
-                        ),
-                        const SizedBox(
-                          height: 8,
-                        ),
-                        TextFormField(
-                          keyboardType: TextInputType.numberWithOptions(),
-                          initialValue: fatGoal.toString(),
-                          decoration:
-                              const InputDecoration(labelText: 'Fat Goal'),
-                          onChanged: (value) {
-                            fatGoal = double.parse(value);
-                          },
-                        ),
-                        const SizedBox(
-                          height: 8,
-                        ),
-                      ],
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: ElevatedButton.icon(
-                          onPressed: () {
-                            UserSettings newSettings = UserSettings(
-                              calorieGoal,
-                              carbGoal,
-                              proteinGoal,
-                              fatGoal,
-                            );
-                            _onSubmit(context, newSettings).then((_) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: const Text("Saved!"),
-                                  duration: const Duration(seconds: 2),
-                                ),
-                              );
-                            });
-                          },
-                          icon: const Icon(Icons.check),
-                          label: const Text("Confirmar"),
-                          style: ButtonStyle(
-                            shape: MaterialStateProperty.all<
-                                    RoundedRectangleBorder>(
-                                const RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.zero)),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            );
-          } else {
-            return Text("Something Went Wrong...");
-          }
-        });
-  }
+  _SettingsScreenState createState() => _SettingsScreenState();
 }
 
-/**
- * 
- * 
- * Future<void> _onSubmit(UserSettingsProvider provider) async {
-    UserSettings newSettings = UserSettings(
-      double.parse(calorieGoal),
-      double.parse(carbGoal),
-      double.parse(proteinGoal),
-      double.parse(fatGoal),
-    );
-    await provider.addObject(newSettings);
+class _SettingsScreenState extends State<SettingsScreen> {
+  final TextEditingController calorieController = TextEditingController();
+  final TextEditingController carbController = TextEditingController();
+  final TextEditingController proteinController = TextEditingController();
+  final TextEditingController fatController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadCurrentSettings();
+    });
+  }
+
+  void _loadCurrentSettings() async {
+    final settingsProvider = Provider.of<UserSettingsProvider>(context, listen: false);
+    final currentSettings = await settingsProvider.object;
+    if (currentSettings != null) {
+      setState(() {
+        calorieController.text = currentSettings.calorieGoal.toString();
+        carbController.text = currentSettings.carbGoal.toString();
+        proteinController.text = currentSettings.proteinGoal.toString();
+        fatController.text = currentSettings.fatGoal.toString();
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final settingsProvider = Provider.of<UserSettingsProvider>(context);
-    settingsProvider.object.then((settings) {
-      setState(() {
-        calorieGoal = settings!.calorieGoal.toString();
-        carbGoal = settings.carbGoal.toString();
-        proteinGoal = settings.proteinGoal.toString();
-        fatGoal = settings.fatGoal.toString();
-      });
-    });
-
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          Expanded(
-            child: Column(
-              children: [
-                TextFormField(
-                  initialValue: calorieGoal,
-                  decoration: const InputDecoration(labelText: 'Calorie Goal'),
-                  onChanged: (value) {
-                    setState(() {
-                      calorieGoal = value;
-                    });
-                  },
-                ),
-                const SizedBox(
-                  height: 8,
-                ),
-                TextFormField(
-                  initialValue: carbGoal,
-                  decoration: const InputDecoration(labelText: 'Carb Goal'),
-                  onChanged: (value) {
-                    setState(() {
-                      carbGoal = value;
-                    });
-                  },
-                ),
-                const SizedBox(
-                  height: 8,
-                ),
-                TextFormField(
-                  initialValue: proteinGoal,
-                  decoration: const InputDecoration(labelText: 'Protein Goal'),
-                  onChanged: (value) {
-                    setState(() {
-                      proteinGoal = value;
-                    });
-                  },
-                ),
-                const SizedBox(
-                  height: 8,
-                ),
-                TextFormField(
-                  initialValue: fatGoal,
-                  decoration: const InputDecoration(labelText: 'Fat Goal'),
-                  onChanged: (value) {
-                    setState(() {
-                      fatGoal = value;
-                    });
-                  },
-                ),
-                const SizedBox(
-                  height: 8,
-                ),
-              ],
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Configurações'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(
+              controller: calorieController,
+              decoration: InputDecoration(labelText: 'Meta de Calorias'),
+              keyboardType: TextInputType.number,
             ),
-          ),
-          Row(
-            children: [
-              Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    _onSubmit(settingsProvider).then(
-                      (_) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: const Text("Saved!"),
-                            duration: const Duration(seconds: 2),
-                          ),
-                        );
-                      },
-                    );
-                  },
-                  icon: const Icon(Icons.check),
-                  label: const Text("Confirmar"),
-                  style: ButtonStyle(
-                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.zero)),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
+            TextField(
+              controller: carbController,
+              decoration: InputDecoration(labelText: 'Meta de Carboidratos'),
+              keyboardType: TextInputType.number,
+            ),
+            TextField(
+              controller: proteinController,
+              decoration: InputDecoration(labelText: 'Meta de Proteínas'),
+              keyboardType: TextInputType.number,
+            ),
+            TextField(
+              controller: fatController,
+              decoration: InputDecoration(labelText: 'Meta de Gorduras'),
+              keyboardType: TextInputType.number,
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () async {
+                final settingsProvider = Provider.of<UserSettingsProvider>(context, listen: false);
+                UserSettings newSettings = UserSettings(
+                  calorieGoal: double.parse(calorieController.text),
+                  carbGoal: double.parse(carbController.text),
+                  proteinGoal: double.parse(proteinController.text),
+                  fatGoal: double.parse(fatController.text),
+                  onboardingCompleted: true,
+                );
+                await settingsProvider.addObject(newSettings);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Configurações salvas com sucesso!')),
+                );
+              },
+              child: Text('Salvar Configurações'),
+            ),
+          ],
+        ),
       ),
     );
- * 
- * 
- */
+  }
+
+  @override
+  void dispose() {
+    calorieController.dispose();
+    carbController.dispose();
+    proteinController.dispose();
+    fatController.dispose();
+    super.dispose();
+  }
+}
