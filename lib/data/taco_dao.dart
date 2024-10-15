@@ -1,19 +1,23 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:macro_counter/data/sqflite_database_helper.dart';
+import '../models/taco_food.dart';
 
 class TacoDao {
   final SqfliteDatabaseHelper _databaseHelper = SqfliteDatabaseHelper.instance;
 
-  Future<List<Map<String, dynamic>>> getFoodsByCategory(String category) async {
+  Future<List<TacoFood>> getFoodsByCategory(String category) async {
     final db = await _databaseHelper.tacoDatabase;
-    return db.query(category);
+    final List<Map<String, dynamic>> maps = await db.query(category);
+    return List.generate(maps.length, (i) {
+      return TacoFood.fromMap(maps[i], category);
+    });
   }
 
-  Future<List<Map<String, dynamic>>> getAllFoods() async {
+  Future<List<TacoFood>> getAllFoods() async {
     final db = await _databaseHelper.tacoDatabase;
-    List<Map<String, dynamic>> allFoods = [];
+    List<TacoFood> allFoods = [];
     List<Map<String, dynamic>> tables = await db.query('sqlite_master', 
-                                         columns: ['Nome'], 
+                                         columns: ['name'], 
                                          where: 'type = ?', 
                                          whereArgs: ['table']);
     
@@ -21,16 +25,16 @@ class TacoDao {
       String tableName = table['name'] as String;
       if (tableName != 'android_metadata' && tableName != 'sqlite_sequence') {
         List<Map<String, dynamic>> foods = await db.query(tableName);
-        allFoods.addAll(foods);
+        allFoods.addAll(foods.map((food) => TacoFood.fromMap(food, tableName)));
       }
     }
     
     return allFoods;
   }
 
-  Future<List<Map<String, dynamic>>> searchFoodByName(String name) async {
+  Future<List<TacoFood>> searchFoodByName(String name) async {
     final db = await _databaseHelper.tacoDatabase;
-    List<Map<String, dynamic>> results = [];
+    List<TacoFood> results = [];
     List<Map<String, dynamic>> tables = await db.query('sqlite_master', 
                                          columns: ['name'], 
                                          where: 'type = ?', 
@@ -44,7 +48,7 @@ class TacoDao {
           where: 'Nome LIKE ?',
           whereArgs: ['%$name%'],
         );
-        results.addAll(foods);
+        results.addAll(foods.map((food) => TacoFood.fromMap(food, tableName)));
       }
     }
     

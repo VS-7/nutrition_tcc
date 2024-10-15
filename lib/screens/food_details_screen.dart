@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import '../widgets/background_container.dart';
+import '../models/taco_food.dart';
 
 class FoodDetailsScreen extends StatelessWidget {
-  final Map<String, dynamic> food;
+  final TacoFood food;
 
   const FoodDetailsScreen({Key? key, required this.food}) : super(key: key);
 
@@ -89,7 +90,7 @@ class FoodDetailsScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
-            food['Nome'],
+            food.nome,
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             textAlign: TextAlign.center,
           ),
@@ -105,10 +106,10 @@ class FoodDetailsScreen extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildMacroInfo('Calorias', '${food['Energia1']} kcal', Colors.black),
-          _buildMacroInfo('Carboidratos', '${food['Carboidrato']}g', Colors.black),
-          _buildMacroInfo('Proteínas', '${food['Proteina']}g', Colors.black),
-          _buildMacroInfo('Gorduras', '${food['Lipideos']}g', Colors.black),
+          _buildMacroInfo('Calorias', '${food.energia.toStringAsFixed(1)} kcal', Colors.black),
+          _buildMacroInfo('Carboidratos', '${food.carboidrato.toStringAsFixed(1)}g', Colors.black),
+          _buildMacroInfo('Proteínas', '${food.proteina.toStringAsFixed(1)}g', Colors.black),
+          _buildMacroInfo('Gorduras', '${food.lipideos.toStringAsFixed(1)}g', Colors.black),
         ],
       ),
     );
@@ -130,23 +131,40 @@ class FoodDetailsScreen extends StatelessWidget {
   }
 
   Widget _buildNutrientsList() {
-    final nutrientsList = food.entries.where((entry) => entry.key != 'Nome').toList();
-    nutrientsList.sort((a, b) => a.key.compareTo(b.key));
+    // Crie uma lista de pares chave-valor para todos os nutrientes
+    final nutrientsList = [
+      {'Energia': food.energia},
+      {'Proteina': food.proteina},
+      {'Lipideos': food.lipideos},
+      {'Carboidrato': food.carboidrato},
+      {'Categoria': food.categoria},
+      // Adicione outros nutrientes aqui se necessário
+    ];
 
     return ListView.builder(
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
       itemCount: nutrientsList.length,
       itemBuilder: (context, index) {
-        final entry = nutrientsList[index];
+        final entry = nutrientsList[index].entries.first;
         return ListTile(
           title: Text(entry.key),
           trailing: Text(
-            '${entry.value is double ? entry.value.toStringAsFixed(2) : entry.value}',
+            _formatValue(entry.value),
             style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
           ),
         );
       },
     );
+  }
+
+  String _formatValue(dynamic value) {
+    if (value is double) {
+      return value.toStringAsFixed(2);
+    } else if (value is int) {
+      return value.toString();
+    } else {
+      return value.toString();
+    }
   }
 }

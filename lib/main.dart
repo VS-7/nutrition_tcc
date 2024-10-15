@@ -14,6 +14,7 @@ import 'package:macro_counter/providers/food_provider.dart';
 import 'package:macro_counter/providers/id_provider_dt.dart';
 import 'package:macro_counter/providers/meal_provider.dart';
 import 'package:macro_counter/providers/user_settings_provider.dart';
+import 'package:macro_counter/providers/taco_meal_provider.dart';
 import 'package:macro_counter/screens/scaffold_screen.dart';
 import 'package:macro_counter/screens/onboarding_screen.dart';
 import 'package:macro_counter/screens/welcome_screen.dart';
@@ -46,6 +47,7 @@ class MyApp extends StatelessWidget {
     UserSettingsProvider userSettingsProvider =
         UserSettingsProvider(userSettingsDao);
     IdProviderDt idProvider = IdProviderDt();
+    TacoMealProvider tacoMealProvider = TacoMealProvider();
 
     return MultiProvider(
       providers: [
@@ -53,6 +55,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (ctx) => mealProvider),
         ChangeNotifierProvider(create: (ctx) => userSettingsProvider),
         ChangeNotifierProvider(create: (ctx) => idProvider),
+        ChangeNotifierProvider(create: (ctx) => tacoMealProvider),
       ],
       child: MaterialApp(
         title: 'Macro Tracker',

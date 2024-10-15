@@ -214,8 +214,7 @@ class _MealsScreenState extends State<MealsScreen> {
                     ),
                   ),
                   SizedBox(height: 20),
-                  MealPlanner(
-                  ),
+                  MealPlanner(selectedDate: selectedDate),
                   SizedBox(height: 16),
                   
                   ListView.builder(

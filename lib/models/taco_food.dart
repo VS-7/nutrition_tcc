@@ -1,28 +1,28 @@
 class TacoFood {
-  final int id;
   final String nome;
   final double energia;
-  final double carboidrato;
   final double proteina;
   final double lipideos;
+  final double carboidrato;
+  final String categoria;
 
   TacoFood({
-    required this.id,
     required this.nome,
     required this.energia,
-    required this.carboidrato,
     required this.proteina,
     required this.lipideos,
+    required this.carboidrato,
+    required this.categoria,
   });
 
-  factory TacoFood.fromMap(Map<String, dynamic> map) {
+  factory TacoFood.fromMap(Map<String, dynamic> map, String categoria) {
     return TacoFood(
-      id: map['id'],
-      nome: map['Nome'],
-      energia: map['Energia1'],
-      carboidrato: map['Carboidrato'],
-      proteina: map['Proteina'],
-      lipideos: map['Lipideos'],
+      nome: map['Nome'] as String,
+      energia: (map['Energia1'] as num).toDouble(),
+      proteina: (map['Proteina'] as num).toDouble(),
+      lipideos: (map['Lipideos'] as num).toDouble(),
+      carboidrato: (map['Carboidrato'] as num).toDouble(),
+      categoria: categoria,
     );
   }
 }

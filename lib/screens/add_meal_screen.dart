@@ -2,11 +2,16 @@ import 'package:flutter/material.dart';
 import '../widgets/background_container.dart';
 import '../data/taco_dao.dart';
 import '../widgets/food_item_card.dart';
+import '../models/taco_food.dart';
+import '../models/taco_meal.dart';
+import '../providers/taco_meal_provider.dart';
+import 'package:provider/provider.dart';
 
 class AddMealScreen extends StatefulWidget {
   final String mealType;
+  final DateTime selectedDate;
 
-  const AddMealScreen({Key? key, required this.mealType}) : super(key: key);
+  const AddMealScreen({Key? key, required this.mealType, required this.selectedDate}) : super(key: key);
 
   @override
   _AddMealScreenState createState() => _AddMealScreenState();
@@ -19,12 +24,13 @@ class _AddMealScreenState extends State<AddMealScreen> {
 
   List<String> _categories = [];
   String? _selectedCategory;
-  List<Map<String, dynamic>> _searchResults = [];
+  List<TacoFood> _searchResults = [];
 
   @override
   void initState() {
     super.initState();
     _loadCategories();
+    _loadAllFoods(); // Carrega todos os alimentos inicialmente
   }
 
   Future<void> _loadCategories() async {
@@ -34,20 +40,25 @@ class _AddMealScreenState extends State<AddMealScreen> {
     });
   }
 
+  Future<void> _loadAllFoods() async {
+    final allFoods = await _tacoDao.getAllFoods();
+    setState(() {
+      _searchResults = allFoods;
+    });
+  }
+
   Future<void> _searchFood(String query) async {
     if (query.isEmpty && _selectedCategory == null) {
-      setState(() {
-        _searchResults = [];
-      });
+      await _loadAllFoods();
       return;
     }
 
-    List<Map<String, dynamic>> results;
+    List<TacoFood> results;
     if (_selectedCategory != null) {
       results = await _tacoDao.getFoodsByCategory(_selectedCategory!);
       if (query.isNotEmpty) {
         results = results.where((food) => 
-          food['Nome'].toString().toLowerCase().contains(query.toLowerCase())
+          food.nome.toLowerCase().contains(query.toLowerCase())
         ).toList();
       }
     } else {
@@ -57,6 +68,58 @@ class _AddMealScreenState extends State<AddMealScreen> {
     setState(() {
       _searchResults = results;
     });
+  }
+
+  void _addFoodToMeal(TacoFood food) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        double quantity = 100;
+        return AlertDialog(
+          title: Text('Adicionar ${food.nome}'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Quantidade (g):'),
+              Slider(
+                value: quantity,
+                min: 0,
+                max: 500,
+                divisions: 50,
+                onChanged: (value) {
+                  setState(() {
+                    quantity = value;
+                  });
+                },
+              ),
+              Text('${quantity.toStringAsFixed(0)}g'),
+            ],
+          ),
+          actions: [
+            TextButton(
+              child: Text('Cancelar'),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            TextButton(
+              child: Text('Adicionar'),
+              onPressed: () {
+                final mealProvider = Provider.of<TacoMealProvider>(context, listen: false);
+                final newMeal = TacoMeal(
+                  id: DateTime.now().millisecondsSinceEpoch,
+                  food: food,
+                  quantity: quantity / 100,
+                  mealType: widget.mealType,
+                  date: widget.selectedDate,
+                );
+                mealProvider.addMeal(newMeal);
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -153,7 +216,10 @@ class _AddMealScreenState extends State<AddMealScreen> {
                 itemCount: _searchResults.length,
                 itemBuilder: (context, index) {
                   final food = _searchResults[index];
-                  return FoodItemCard(food: food);
+                  return FoodItemCard(
+                    food: food,
+                    onAdd: _addFoodToMeal,
+                  );
                 },
               ),
             ),

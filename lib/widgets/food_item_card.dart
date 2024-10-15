@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import '../screens/food_details_screen.dart';
+import '../models/taco_food.dart';
 
 class FoodItemCard extends StatelessWidget {
-  final Map<String, dynamic> food;
+  final TacoFood food;
+  final Function(TacoFood) onAdd;
 
-  const FoodItemCard({Key? key, required this.food}) : super(key: key);
+  const FoodItemCard({Key? key, required this.food, required this.onAdd}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -22,55 +24,55 @@ class FoodItemCard extends StatelessWidget {
         elevation: 2,
         margin: EdgeInsets.symmetric(horizontal: 20, vertical: 4),
         child: Padding(
-            padding: EdgeInsets.all(12),
-            child: Column(
+          padding: EdgeInsets.all(12),
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                    Expanded(
-                        child: Text(
-                            food['Nome'],
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 2,
-                        ),
-                    ),
-                    IconButton(
-                        icon: const Icon(Icons.add_circle_outline_rounded),
-                        onPressed: () {},
-                    ),
-                ]),
-                SizedBox(height: 4),
-                Row(
+              Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                    Text('100g', style: TextStyle(fontSize: 14)),
-                    SizedBox(width: 8),
-                    Text('${food['Energia1']} kcal', style: TextStyle(fontSize: 14)),
+                  Expanded(
+                    child: Text(
+                      food.nome,
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.add_circle_outline_rounded),
+                    onPressed: () => onAdd(food),
+                  ),
                 ],
-                ),
-                SizedBox(height: 16),
-                Divider(color: Colors.grey, height: 2),
-                SizedBox(height: 8),
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                        _buildNutrientInfo('Carboidratos', food['Carboidrato']),
-                        _buildNutrientInfo('Proteínas', food['Proteina']),
-                        _buildNutrientInfo('Lipídeos', food['Lipideos']),
-                    ],
-                ),
+              ),
+              SizedBox(height: 4),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('100g', style: TextStyle(fontSize: 14)),
+                  SizedBox(width: 8),
+                  Text('${food.energia.toStringAsFixed(1)} kcal', style: TextStyle(fontSize: 14)),
+                ],
+              ),
+              SizedBox(height: 16),
+              Divider(color: Colors.grey, height: 2),
+              SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _buildNutrientInfo('Carboidratos', food.carboidrato),
+                  _buildNutrientInfo('Proteínas', food.proteina),
+                  _buildNutrientInfo('Lipídeos', food.lipideos),
+                ],
+              ),
             ],
-            ),
+          ),
         ),
-        ),
+      ),
     );
-    }
- 
+  }
 
-  Widget _buildNutrientInfo(String label, dynamic value) {
+  Widget _buildNutrientInfo(String label, double value) {
     return Column(
       children: [
         Text('${value.toStringAsFixed(1)}g', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
