@@ -10,6 +10,10 @@ class UserSettings {
   final String gender;
   final String activityLevel;
   final String goal;
+  final double breakfastCalorieGoal;
+  final double lunchCalorieGoal;
+  final double dinnerCalorieGoal;
+  final double snackCalorieGoal;
 
   UserSettings({
     required this.calorieGoal,
@@ -23,5 +27,9 @@ class UserSettings {
     this.gender = '',
     this.activityLevel = '',
     this.goal = '',
+    required this.breakfastCalorieGoal,
+    required this.lunchCalorieGoal,
+    required this.dinnerCalorieGoal,
+    required this.snackCalorieGoal,
   });
 }

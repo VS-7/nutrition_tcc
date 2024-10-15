@@ -279,22 +279,38 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   void _submitForm() {
-    print("Tentando enviar o formulário");
     if (_formKey.currentState!.validate() && _allFieldsFilled()) {
-      print("Formulário validado");
       _formKey.currentState!.save();
       
-      print("Calculando valores");
       double bmr = calculateBMR();
       double tdee = calculateTDEE(bmr);
       double calorieGoal = calculateCalorieGoal(tdee);
       
-      print("Criando novas configurações");
+      // Calcular as metas calóricas para cada refeição
+      double breakfastCalorieGoal = calorieGoal * 0.25; // 25% (média entre 15% e 35%)
+      double lunchCalorieGoal = calorieGoal * 0.30; // 30% (média entre 15% e 40%)
+      double dinnerCalorieGoal = calorieGoal * 0.30; // 30% (média entre 15% e 40%)
+      double snackCalorieGoal = calorieGoal * 0.15; // 15% (média entre 5% e 15%)
+
+      // Verificar se a soma das calorias das refeições é igual ao total
+      double totalMealCalories = breakfastCalorieGoal + lunchCalorieGoal + dinnerCalorieGoal + snackCalorieGoal;
+      
+      // Ajustar a diferença, se houver
+      if (totalMealCalories != calorieGoal) {
+        double difference = calorieGoal - totalMealCalories;
+        // Distribuir a diferença igualmente entre as refeições
+        double adjustment = difference / 4;
+        breakfastCalorieGoal += adjustment;
+        lunchCalorieGoal += adjustment;
+        dinnerCalorieGoal += adjustment;
+        snackCalorieGoal += adjustment;
+      }
+
       UserSettings newSettings = UserSettings(
         calorieGoal: calorieGoal,
-        carbGoal: calorieGoal * 0.5 / 4,
-        proteinGoal: calorieGoal * 0.3 / 4,
-        fatGoal: calorieGoal * 0.2 / 9,
+        carbGoal: calorieGoal * 0.5 / 4, // 50% das calorias de carboidratos
+        proteinGoal: calorieGoal * 0.3 / 4, // 30% das calorias de proteínas
+        fatGoal: calorieGoal * 0.2 / 9, // 20% das calorias de gorduras
         onboardingCompleted: true,
         age: age!,
         weight: weight!,
@@ -302,16 +318,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         gender: gender!,
         activityLevel: activityLevel!,
         goal: goal!,
+        breakfastCalorieGoal: breakfastCalorieGoal,
+        lunchCalorieGoal: lunchCalorieGoal,
+        dinnerCalorieGoal: dinnerCalorieGoal,
+        snackCalorieGoal: snackCalorieGoal,
       );
 
-      print("Salvando configurações");
       Provider.of<UserSettingsProvider>(context, listen: false).addObject(newSettings);
-      print("Configurações salvas: ${newSettings.toString()}");
       
-      print("Navegando para a tela inicial");
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => ScaffoldScreen()),
-      );
+      MaterialPageRoute(builder: (context) => ScaffoldScreen()),
+    );
     } else {
       print("Formulário não validado ou campos não preenchidos");
       String missingFields = _getMissingFields();

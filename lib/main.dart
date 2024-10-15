@@ -39,8 +39,7 @@ class MyApp extends StatelessWidget {
 
     Dao<Food> foodDao = FoodDao(sqfliteHelper, foodTableName);
     Dao<Meal> mealDao = MealDao(sqfliteHelper, mealTableName);
-    IoDao<UserSettings> userSettingsDao =
-        UserSettingsDao(sharedPreferencesHelper);
+    IoDao<UserSettings> userSettingsDao = UserSettingsDao();
 
     FoodProvider foodProvider = FoodProvider(foodDao);
     MealProvider mealProvider = MealProvider(mealDao);

@@ -43,7 +43,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
       backgroundColor: Colors.transparent,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        
         child: Column(
           children: [
             TextField(
@@ -70,12 +69,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ElevatedButton(
               onPressed: () async {
                 final settingsProvider = Provider.of<UserSettingsProvider>(context, listen: false);
+                final currentSettings = await settingsProvider.object;
                 UserSettings newSettings = UserSettings(
                   calorieGoal: double.parse(calorieController.text),
                   carbGoal: double.parse(carbController.text),
                   proteinGoal: double.parse(proteinController.text),
                   fatGoal: double.parse(fatController.text),
                   onboardingCompleted: true,
+                  age: currentSettings?.age ?? 0,
+                  weight: currentSettings?.weight ?? 0,
+                  height: currentSettings?.height ?? 0,
+                  gender: currentSettings?.gender ?? '',
+                  activityLevel: currentSettings?.activityLevel ?? '',
+                  goal: currentSettings?.goal ?? '',
+                  breakfastCalorieGoal: currentSettings?.breakfastCalorieGoal ?? 0,
+                  lunchCalorieGoal: currentSettings?.lunchCalorieGoal ?? 0,
+                  dinnerCalorieGoal: currentSettings?.dinnerCalorieGoal ?? 0,
+                  snackCalorieGoal: currentSettings?.snackCalorieGoal ?? 0,
                 );
                 await settingsProvider.addObject(newSettings);
                 ScaffoldMessenger.of(context).showSnackBar(

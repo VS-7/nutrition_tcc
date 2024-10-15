@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../screens/add_meal_screen.dart';
 import '../providers/taco_meal_provider.dart';
+import '../providers/user_settings_provider.dart';
 import '../models/taco_meal.dart';
+import '../models/user_settings.dart';
 
 class MealPlanner extends StatelessWidget {
   final DateTime selectedDate;
@@ -11,61 +13,81 @@ class MealPlanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(20),
-      margin: EdgeInsets.symmetric(horizontal: 20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            spreadRadius: 2,
-            blurRadius: 5,
-            offset: Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Alimentação",
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          SizedBox(height: 16),
-          MealItem(
-            imagePath: 'assets/images/coffe.png',
-            name: 'Café da manhã',
-            mealType: 'Café da manhã',
-            selectedDate: selectedDate,
-          ),
-          Divider(color: Colors.grey, height: 2),
-          MealItem(
-            imagePath: 'assets/images/lunch.png',
-            name: 'Almoço',
-            mealType: 'Almoço',
-            selectedDate: selectedDate,
-          ),
-          Divider(color: Colors.grey, height: 2),
-          MealItem(
-            imagePath: 'assets/images/snack.png',
-            name: 'Lanche',
-            mealType: 'Lanche',
-            selectedDate: selectedDate,
-          ),
-          Divider(color: Colors.grey, height: 2),
-          MealItem(
-            imagePath: 'assets/images/dinner.png',
-            name: 'Jantar',
-            mealType: 'Jantar',
-            selectedDate: selectedDate,
-          ),
-        ],
-      ),
+    return Consumer<UserSettingsProvider>(
+      builder: (context, userSettingsProvider, child) {
+        return FutureBuilder<UserSettings?>(
+          future: userSettingsProvider.object,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator();
+            }
+            if (snapshot.hasError || !snapshot.hasData) {
+              return Text('Erro ao carregar as configurações do usuário');
+            }
+            UserSettings userSettings = snapshot.data!;
+            return Container(
+              padding: EdgeInsets.all(20),
+              margin: EdgeInsets.symmetric(horizontal: 20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.2),
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                    offset: Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Alimentação",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  MealItem(
+                    imagePath: 'assets/images/coffe.png',
+                    name: 'Café da manhã',
+                    mealType: 'Café da manhã',
+                    selectedDate: selectedDate,
+                    calorieGoal: userSettings.breakfastCalorieGoal,
+                  ),
+                  Divider(color: Colors.grey, height: 2),
+                  MealItem(
+                    imagePath: 'assets/images/lunch.png',
+                    name: 'Almoço',
+                    mealType: 'Almoço',
+                    selectedDate: selectedDate,
+                    calorieGoal: userSettings.lunchCalorieGoal,
+                  ),
+                  Divider(color: Colors.grey, height: 2),
+                  MealItem(
+                    imagePath: 'assets/images/snack.png',
+                    name: 'Lanche',
+                    mealType: 'Lanche',
+                    selectedDate: selectedDate,
+                    calorieGoal: userSettings.snackCalorieGoal,
+                  ),
+                  Divider(color: Colors.grey, height: 2),
+                  MealItem(
+                    imagePath: 'assets/images/dinner.png',
+                    name: 'Jantar',
+                    mealType: 'Jantar',
+                    selectedDate: selectedDate,
+                    calorieGoal: userSettings.dinnerCalorieGoal,
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }
@@ -75,6 +97,7 @@ class MealItem extends StatelessWidget {
   final String name;
   final String mealType;
   final DateTime selectedDate;
+  final double calorieGoal;
 
   const MealItem({
     Key? key,
@@ -82,6 +105,7 @@ class MealItem extends StatelessWidget {
     required this.name,
     required this.mealType,
     required this.selectedDate,
+    required this.calorieGoal,
   }) : super(key: key);
 
   @override
@@ -103,9 +127,9 @@ class MealItem extends StatelessWidget {
                     alignment: Alignment.center,
                     children: [
                       CircularProgressIndicator(
-                        value: consumedCalories / 1000, // Assuming a goal of 1000 calories per meal
+                        value: consumedCalories / calorieGoal,
                         backgroundColor: Colors.grey[300],
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+                        valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFA7E100)),
                         strokeWidth: 4,
                       ),
                       ClipOval(
@@ -125,7 +149,7 @@ class MealItem extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                      Text('${consumedCalories.toStringAsFixed(0)} / 1000 kcal', style: TextStyle(color: Colors.grey[600])),
+                      Text('${consumedCalories.toStringAsFixed(0)} / ${calorieGoal.toStringAsFixed(0)} kcal', style: TextStyle(color: Colors.grey[600])),
                     ],
                   ),
                 ),

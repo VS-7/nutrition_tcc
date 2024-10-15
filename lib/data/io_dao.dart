@@ -1,4 +1,6 @@
 abstract class IoDao<T> {
-  Future<int> insert(T item);
   Future<T?> read();
+  Future<int> insert(T item);
+  Future<int> update(T item);
+  Future<int> delete();
 }
