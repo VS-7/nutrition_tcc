@@ -182,9 +182,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       'Qual é o seu objetivo?',
       Column(
         children: [
-          _buildOptionButton('Perder Peso', '⬇️', goal),
-          _buildOptionButton('Manter Peso', '⚖️', goal),
-          _buildOptionButton('Ganhar Peso', '⬆️', goal),
+          _buildOptionButton('Perder Peso', '🏃', goal),
+          _buildOptionButton('Manter Peso', '🥗', goal),
+          _buildOptionButton('Ganhar Peso', '💪', goal),
         ],
       ),
     );
@@ -341,6 +341,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     return missingFields.join(', ');
   }
 
+/*
+  // BMR de Harris-Benedict
   double calculateBMR() {
     if (gender == 'Masculino') {
       return 88.362 + (13.397 * weight!) + (4.799 * height!) - (5.677 * age!);
@@ -348,6 +350,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       return 447.593 + (9.247 * weight!) + (3.098 * height!) - (4.330 * age!);
     }
   }
+*/
+
+ // BMR de Mifflin-St Jeor
+  double calculateBMR() {
+    if (gender == 'Masculino') {
+      return (10 * weight!) + (6.25 * height!) - (5 * age!) + 5;
+    } else {
+      return (10 * weight!) + (6.25 * height!) - (5 * age!) - 161;
+    }
+  }
+
 
   double calculateTDEE(double bmr) {
     switch (activityLevel) {
@@ -422,7 +435,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: _nextStep,
-                    child: Text(_currentStep == _steps.length - 1 ? 'Finalizar' : 'Continuar'),
+                    child: Text(_currentStep == _steps.length - 1 ? 'Finalizar' : 'Continuar', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).primaryColor,
                       foregroundColor: Theme.of(context).textTheme.bodyLarge!.color,

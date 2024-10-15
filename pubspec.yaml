@@ -30,6 +30,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+    
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -69,6 +70,7 @@ flutter:
     - assets/images/lunch.png
     - assets/images/snack.png
     - assets/images/dinner.png
+    - assets/images/icon.png
     # Banco de dados com a tabela de alimentos TACO
     - assets/databases/taco.db
 

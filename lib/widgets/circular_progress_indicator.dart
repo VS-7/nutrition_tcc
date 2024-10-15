@@ -62,7 +62,7 @@ class CircularProgressIndicatorWidget extends StatelessWidget {
           ),
         ),
         Text(
-          '$currentValue/$goalValue',
+          '${currentValue.toInt()} / ${goalValue.toInt()}g',
           style: const TextStyle(fontSize: 12),
         ),
       ],

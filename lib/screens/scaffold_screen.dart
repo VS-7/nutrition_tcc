@@ -45,7 +45,7 @@ class _ScaffoldScreenState extends State<ScaffoldScreen> {
       },
     },
     {
-      "title": "Settings",
+      "title": "Configurações",
       "screen": SettingsScreen(),
       "fabAction": null,
     },
@@ -116,8 +116,8 @@ class _ScaffoldScreenState extends State<ScaffoldScreen> {
             label: 'Foods',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
+            icon: Icon(Icons.person),
+            label: 'Perfil',
           ),
         ],
         currentIndex: selectedIndex,

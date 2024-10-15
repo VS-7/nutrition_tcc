@@ -16,6 +16,8 @@ import 'package:macro_counter/providers/meal_provider.dart';
 import 'package:macro_counter/providers/user_settings_provider.dart';
 import 'package:macro_counter/screens/scaffold_screen.dart';
 import 'package:macro_counter/screens/onboarding_screen.dart';
+import 'package:macro_counter/screens/welcome_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 import 'theme/app_theme.dart';
 
@@ -55,19 +57,42 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Macro Tracker',
         theme: AppTheme.themeData,
-        home: FutureBuilder<UserSettings?>(
-          future: userSettingsProvider.object,
+        home: FutureBuilder<bool>(
+          future: _checkFirstSeen(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return CircularProgressIndicator();
-            } else if (snapshot.hasData && snapshot.data!.onboardingCompleted) {
-              return ScaffoldScreen();
+            } else if (snapshot.data == true) {
+              return WelcomeScreen();
             } else {
-              return OnboardingScreen();
+              return FutureBuilder<UserSettings?>(
+                future: userSettingsProvider.object,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return CircularProgressIndicator();
+                  } else if (snapshot.hasData && snapshot.data!.onboardingCompleted) {
+                    return ScaffoldScreen();
+                  } else {
+                    return OnboardingScreen();
+                  }
+                },
+              );
             }
           },
         ),
       ),
     );
+  }
+
+  Future<bool> _checkFirstSeen() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool _seen = (prefs.getBool('seen') ?? false);
+
+    if (!_seen) {
+      await prefs.setBool('seen', true);
+      return true;
+    }
+
+    return false;
   }
 }
