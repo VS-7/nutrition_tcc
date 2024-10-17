@@ -6,6 +6,7 @@ import 'package:macro_counter/screens/foods_screen.dart';
 import 'package:macro_counter/screens/meal_form_screen.dart';
 import 'package:macro_counter/screens/meals_screen.dart';
 import 'package:macro_counter/screens/settings_screen.dart';
+import 'package:macro_counter/screens/profile_screen.dart';
 import 'package:provider/provider.dart';
 
 class ScaffoldScreen extends StatefulWidget {
@@ -45,8 +46,8 @@ class _ScaffoldScreenState extends State<ScaffoldScreen> {
       },
     },
     {
-      "title": "Configurações",
-      "screen": SettingsScreen(),
+      "title": "Perfil",
+      "screen": ProfileScreen(),
       "fabAction": null,
     },
   ];
@@ -77,35 +78,47 @@ class _ScaffoldScreenState extends State<ScaffoldScreen> {
                 title: Text(screens[selectedIndex]["title"]),
                 backgroundColor: Colors.transparent,
                 foregroundColor: Colors.black,
+                actions: selectedIndex == 2 // Adiciona o ícone de configurações apenas na tela de perfil
+                    ? [
+                        IconButton(
+                          icon: Icon(Icons.settings, color: Colors.black),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => SettingsScreen()),
+                            );
+                          },
+                        ),
+                      ]
+                    : null,
               ),
         body: screens[selectedIndex]["screen"] as Widget,
         floatingActionButton: (screens[selectedIndex]["fabAction"] == null)
             ? null
             : Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    spreadRadius: 2,
-                    blurRadius: 8,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      spreadRadius: 2,
+                      blurRadius: 8,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: FloatingActionButton(
+                  onPressed: () {
+                    screens[selectedIndex]["fabAction"](context);
+                  },
+                  backgroundColor: Colors.black,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  shape: const CircleBorder(),
+                  child: const Icon(Icons.add, size: 32),
+                ),
               ),
-              child: FloatingActionButton(
-                onPressed: () {
-                  screens[selectedIndex]["fabAction"](context);
-                },
-                backgroundColor: Colors.black,
-                foregroundColor: Colors.white,
-                elevation: 0,
-                shape: const CircleBorder(),
-                child: const Icon(Icons.add, size: 32),
-              ),
-            ),
-      
-       bottomNavigationBar: Container(
+        bottomNavigationBar: Container(
           decoration: BoxDecoration(
             boxShadow: [
               BoxShadow(

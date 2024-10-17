@@ -5,6 +5,7 @@ import '../widgets/food_item_card.dart';
 import '../models/taco_food.dart';
 import '../models/taco_meal.dart';
 import '../providers/taco_meal_provider.dart';
+import '../widgets/add_food_bottom_sheet.dart';
 import '../screens/selected_foods_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -72,65 +73,25 @@ class _AddMealScreenState extends State<AddMealScreen> {
     });
   }
 
-  void _addFoodToMeal(TacoFood food) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        double quantity = 100;
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: Text('Adicionar ${food.nome}'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text('Quantidade (g):'),
-                  Slider(
-                    value: quantity,
-                    min: 0,
-                    max: 500,
-                    divisions: 50,
-                    onChanged: (value) {
-                      setState(() {
-                        quantity = value;
-                      });
-                    },
-                  ),
-                  Text('${quantity.toStringAsFixed(0)}g'),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  child: Text('Cancelar'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-                TextButton(
-                  child: Text('Adicionar'),
-                  onPressed: () {
-                    final meal = TacoMeal(
-                      id: 0,
-                      food: food,
-                      quantity: quantity / 100,
-                      mealType: widget.mealType,
-                      date: widget.selectedDate,
-                    );
-                    setState(() {
-                      _selectedFoods.add(meal);
-                    });
-                    Navigator.of(context).pop();
-                    // Atualiza o estado da tela principal
-                    this.setState(() {});
-                  },
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-  }
+void _addFoodToMeal(TacoFood food) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (context) {
+      return AddFoodBottomSheet(
+        food: food,
+        onAdd: (TacoMeal meal) {
+          setState(() {
+            _selectedFoods.add(meal);
+          });
+        },
+        mealType: widget.mealType,
+        selectedDate: widget.selectedDate,
+      );
+    },
+  );
+}
 
   void _saveMeals() {
     final mealProvider = Provider.of<TacoMealProvider>(context, listen: false);

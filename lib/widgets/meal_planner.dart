@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../screens/add_meal_screen.dart';
+import '../screens/meal_details_screen.dart';
 import '../providers/taco_meal_provider.dart';
 import '../providers/user_settings_provider.dart';
 import '../models/taco_meal.dart';
@@ -114,63 +115,75 @@ class MealItem extends StatelessWidget {
       builder: (context, mealProvider, child) {
         double consumedCalories = mealProvider.getTotalCaloriesByTypeAndDate(mealType, selectedDate);
 
-        return GestureDetector(
-          onTap: () => _navigateToAddMealScreen(context, mealType),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            child: Row(
-              children: [
-                SizedBox(
-                  width: 40,
-                  height: 40,
-                  child: Stack(
-                    alignment: Alignment.center,
+        return Row(
+          children: [
+            Expanded(
+              child: GestureDetector(
+                onTap: () => _navigateToMealDetailsScreen(context, mealType),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  child: Row(
                     children: [
-                      CircularProgressIndicator(
-                        value: consumedCalories / calorieGoal,
-                        backgroundColor: Colors.grey[300],
-                        valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFA7E100)),
-                        strokeWidth: 4,
+                      Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          SizedBox(
+                            width: 40,
+                            height: 40,
+                            child: CircularProgressIndicator(
+                              value: consumedCalories / calorieGoal,
+                              backgroundColor: Colors.grey[300],
+                              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFA7E100)),
+                              strokeWidth: 4,
+                            ),
+                          ),
+                          Image.asset(
+                            imagePath,
+                            width: 24,
+                            height: 24,
+                          ),
+                        ],
                       ),
-                      ClipOval(
-                        child: Image.asset(
-                          imagePath,
-                          fit: BoxFit.cover,
-                          width: 30,
-                          height: 30,
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                            Text('${consumedCalories.toStringAsFixed(0)} / ${calorieGoal.toStringAsFixed(0)} kcal', style: TextStyle(color: Colors.grey[600])),
+                          ],
                         ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                      Text('${consumedCalories.toStringAsFixed(0)} / ${calorieGoal.toStringAsFixed(0)} kcal', style: TextStyle(color: Colors.grey[600])),
-                    ],
-                  ),
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.black,
-                    shape: BoxShape.circle,
-                  ),
-                  width: 30,
-                  height: 30,
-                  child: IconButton(
-                    icon: const Icon(Icons.chevron_right, color: Colors.white, size: 24),
-                    onPressed: () => _navigateToAddMealScreen(context, mealType),
-                    padding: EdgeInsets.zero,
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.black,
+                shape: BoxShape.circle,
+              ),
+              width: 30,
+              height: 30,
+              child: IconButton(
+                icon: const Icon(Icons.chevron_right, color: Colors.white, size: 24),
+                onPressed: () => _navigateToAddMealScreen(context, mealType),
+                padding: EdgeInsets.zero,
+              ),
+            ),
+          ],
         );
       },
+    );
+  }
+
+  void _navigateToMealDetailsScreen(BuildContext context, String mealType) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MealDetailsScreen(mealType: mealType, selectedDate: selectedDate),
+      ),
     );
   }
 
