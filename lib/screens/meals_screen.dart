@@ -63,20 +63,78 @@ class _MealsScreenState extends State<MealsScreen> {
     double consumedProteins = consumedMacros['protein']!;
     double consumedFats = consumedMacros['fat']!;
 
+  Widget _buildDragHandle() {
+    return Container(
+      width: 40,
+      height: 5,
+      margin: EdgeInsets.symmetric(vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.grey[600],
+        borderRadius: BorderRadius.circular(2.5),
+      ),
+    );
+  }
+
   void _showDatePicker() {
-    showDatePicker(
+    showModalBottomSheet(
       context: context,
-      firstDate: DateTime.now().subtract(Duration(days: 365)),
-      lastDate: DateTime.now(),
-      initialDate: selectedDate
-    ).then(
-      (value) {
-        if (value != null) {
-          setState(() {
-            selectedDate = value;
-          });
-          Provider.of<TacoMealProvider>(context, listen: false).loadMeals(selectedDate);
-        }
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(80)),
+      ),
+      builder: (BuildContext context) {
+        return Container(
+          height: MediaQuery.of(context).size.height * 0.5,
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          decoration: BoxDecoration(
+            color: Colors.black,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(80)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildDragHandle(),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  'Selecione uma data',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w300, color: Colors.white),
+                ),
+              ),
+              Expanded(
+                child: Theme(
+                  data: ThemeData.dark().copyWith(
+                    colorScheme: ColorScheme.dark(
+                      primary: Colors.white,
+                      onPrimary: Colors.black,
+                      surface: Colors.grey[900]!,
+                      onSurface: Colors.white,
+                    ),
+                    textButtonTheme: TextButtonThemeData(
+                      style: TextButton.styleFrom(
+                        foregroundColor: Color(0xFFA7E100),
+                      ),
+                    ),
+                  ),
+                  child: CalendarDatePicker(
+                    initialDate: selectedDate,
+                    firstDate: DateTime.now().subtract(Duration(days: 365)),
+                    lastDate: DateTime.now(),
+                    onDateChanged: (DateTime value) {
+                      setState(() {
+                        selectedDate = value;
+                      });
+                      Provider.of<TacoMealProvider>(context, listen: false).loadMeals(selectedDate);
+                      Navigator.pop(context);
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
       },
     );
   }

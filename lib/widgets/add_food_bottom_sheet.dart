@@ -30,8 +30,8 @@ class _AddFoodBottomSheetState extends State<AddFoodBottomSheet> {
         bottom: MediaQuery.of(context).viewInsets.bottom,
       ),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        color: Colors.black,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(80)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -40,54 +40,47 @@ class _AddFoodBottomSheetState extends State<AddFoodBottomSheet> {
           Flexible(
             child: SingleChildScrollView(
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(24.0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      'Adicionar ${widget.food.nome}',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+                      '${widget.food.nome}',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w300, color: Colors.white),
                     ),
-                    SizedBox(height: 20),
+                    SizedBox(height: 24),
                     _buildNutritionInfo(),
-                    SizedBox(height: 20),
-                    Text('Quantidade (g):'),
+                    SizedBox(height: 24),
+                    Text('Quantidade (g):', style: TextStyle(color: Colors.white)),
                     Slider(
-                        value: quantity,
-                        min: 1,
-                        max: 500,
-                        divisions: 499,
-                        activeColor: Colors.black,
-                        inactiveColor: Colors.grey[300],
-                        onChanged: (value) {
+                      value: quantity,
+                      min: 1,
+                      max: 500,
+                      divisions: 499,
+                      activeColor: Colors.white,
+                      inactiveColor: Colors.grey[800],
+                      onChanged: (value) {
                         setState(() {
-                            quantity = value;
+                          quantity = value;
                         });
-                        },
+                      },
                     ),
-                    Text('${quantity.toStringAsFixed(0)}g'),
-
-              SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    child: Text('Adicionar'),
-                    onPressed: _addFood,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black,
-                      foregroundColor: Colors.white,
-                      minimumSize: Size(350, 50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-
+                    Text('${quantity.toStringAsFixed(0)}g', style: TextStyle(color: Colors.white)),
+                    SizedBox(height: 24),
+                    ElevatedButton(
+                      child: Text('Adicionar'),
+                      onPressed: _addFood,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.grey[900],
+                        foregroundColor: Colors.white,
+                        minimumSize: Size(double.infinity, 50),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
                 ),
               ),
             ),
@@ -99,41 +92,45 @@ class _AddFoodBottomSheetState extends State<AddFoodBottomSheet> {
 
   Widget _buildDragHandle() {
     return Container(
-      width: 60,
+      width: 40,
       height: 5,
-      margin: EdgeInsets.symmetric(vertical: 8),
+      margin: EdgeInsets.symmetric(vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.grey[300],
+        color: Colors.grey[600],
         borderRadius: BorderRadius.circular(2.5),
       ),
     );
   }
 
   Widget _buildNutritionInfo() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        _nutritionRow('Calorias', widget.food.energia, 'kcal'),
-        _nutritionRow('Proteínas', widget.food.proteina, 'g'),
-        _nutritionRow('Carboidratos', widget.food.carboidrato, 'g'),
-        _nutritionRow('Gorduras', widget.food.lipideos, 'g'),
-      ],
+    return Container(
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.grey[900],
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          _nutritionRow('Calorias', widget.food.energia, 'kcal'),
+          _nutritionRow('Proteínas', widget.food.proteina, 'g'),
+          _nutritionRow('Carboidratos', widget.food.carboidrato, 'g'),
+          _nutritionRow('Gorduras', widget.food.lipideos, 'g'),
+        ],
+      ),
     );
   }
 
   Widget _nutritionRow(String label, double value, String unit) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            '${(value * quantity / 100).toStringAsFixed(1)} $unit', 
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-          Text(label, style: TextStyle(fontSize: 12)),
-        ],
-      ),
+    return Column(
+      children: [
+        Text(
+          '${(value * quantity / 100).toStringAsFixed(1)} $unit',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+        ),
+        SizedBox(height: 4),
+        Text(label, style: TextStyle(fontSize: 12, color: Colors.grey[400])),
+      ],
     );
   }
 

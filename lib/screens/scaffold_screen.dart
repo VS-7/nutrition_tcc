@@ -19,38 +19,124 @@ class ScaffoldScreen extends StatefulWidget {
 
 class _ScaffoldScreenState extends State<ScaffoldScreen> {
   int selectedIndex = 0;
+  late List<Map<String, dynamic>> screens;
 
-  List<Map<String, dynamic>> screens = [
-    {
-      "title": "Meals",
-      "screen": MealsScreen(),
-      "fabAction": (BuildContext context) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => MealFormScreen(),
+  @override
+  void initState() {
+    super.initState();
+    screens = [
+      {
+        "title": "Meals",
+        "screen": MealsScreen(),
+        "fabAction": (BuildContext context) {
+          _showMealOptions(context);
+        },
+      },
+      {
+        "title": "Foods",
+        "screen": FoodsScreen(),
+        "fabAction": (BuildContext context) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => FoodFormScreen(),
+            ),
+          );
+        },
+      },
+      {
+        "title": "Perfil",
+        "screen": ProfileScreen(),
+        "fabAction": null,
+      },
+    ];
+  }
+
+  void _showMealOptions(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return Container(
+          padding: EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: Colors.black,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(80)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 5,
+                margin: EdgeInsets.only(bottom: 24),
+                decoration: BoxDecoration(
+                  color: Colors.grey[600],
+                  borderRadius: BorderRadius.circular(2.5),
+                ),
+              ),
+              Text(
+                'Adicionar Refeição',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w300,
+                  color: Colors.white,
+                ),
+              ),
+              SizedBox(height: 30),
+              _buildMealOption(context, 'Café da Manhã', 'assets/images/coffe.png'),
+              SizedBox(height: 16),
+              _buildMealOption(context, 'Almoço', 'assets/images/lunch.png'),
+              SizedBox(height: 16),
+              _buildMealOption(context, 'Lanche', 'assets/images/snack.png'),
+              SizedBox(height: 16),
+              _buildMealOption(context, 'Jantar', 'assets/images/dinner.png'),
+              SizedBox(height: 40),
+            ],
           ),
         );
       },
-    },
-    {
-      "title": "Foods",
-      "screen": FoodsScreen(),
-      "fabAction": (BuildContext context) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => FoodFormScreen(),
-          ),
-        );
+    );
+  }
+
+  Widget _buildMealOption(BuildContext context, String title, String imagePath) {
+    return ElevatedButton(
+      onPressed: () {
+        Navigator.pop(context);
+        print('Selecionado: $title');
+        // Adicione aqui a lógica para lidar com a seleção da refeição
       },
-    },
-    {
-      "title": "Perfil",
-      "screen": ProfileScreen(),
-      "fabAction": null,
-    },
-  ];
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.grey[900],
+        foregroundColor: Colors.white,
+        padding: EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              Image.asset(
+                imagePath,
+                width: 24,
+                height: 24,
+              ),
+              SizedBox(width: 16),
+              Text(
+                title,
+                style: TextStyle(fontSize: 14),
+              ),
+            ],
+          ),
+          Icon(Icons.arrow_forward_ios, size: 18),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {

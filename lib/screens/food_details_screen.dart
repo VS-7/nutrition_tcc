@@ -60,35 +60,41 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
     );
   }
 
-  Widget _buildFoodInfoContainer() {
-    return Container(
-      padding: EdgeInsets.all(20),
-      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            spreadRadius: 2,
-            blurRadius: 5,
-            offset: Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            widget.food.nome,
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 16),
-          _buildNutritionInfo(),
-        ],
-      ),
-    );
-  }
+Widget _buildFoodInfoContainer() {
+  return Container(
+    padding: EdgeInsets.all(20),
+    margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(20),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.grey.withOpacity(0.2),
+          spreadRadius: 2,
+          blurRadius: 5,
+          offset: Offset(0, 3),
+        ),
+      ],
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          _getCategoryEmoji(widget.food.categoria),
+          style: TextStyle(fontSize: 48),
+        ),
+        SizedBox(height: 10),
+        Text(
+          widget.food.nome,
+          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+          textAlign: TextAlign.center,
+        ),
+        SizedBox(height: 16),
+        _buildNutritionInfo(),
+      ],
+    ),
+  );
+}
 
   Widget _buildNutritionInfoContainer() {
     return Container(
@@ -118,6 +124,43 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
         ],
       ),
     );
+  }
+
+  String _getCategoryEmoji(String category) {
+    switch (category.toLowerCase()) {
+      case 'bebidas':
+        return '🥤';
+      case 'acucarados':
+        return '🍬';
+      case 'carnes':
+        return '🍗';
+      case 'frutas':
+        return '🍎';
+      case 'industrializados':
+        return '🏭';
+      case 'leguminosas':
+        return '🫘';
+      case 'leites':
+        return '🥛';
+      case 'miscelaneas':
+        return '🍱';
+      case 'gorduras':
+        return '🧈';
+      case 'ovos':
+        return '🥚';
+      case 'pescados':
+        return '🐟';
+      case 'preparados':
+        return '🍲';
+      case 'verduras':
+        return '🥬';
+      case 'cereais':
+        return '🌾';
+      case 'nozes':
+        return '🥜';
+      default:
+        return '🍽️';
+    }
   }
 
   Widget _buildNutritionInfo() {
@@ -190,7 +233,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
       color: Colors.white,
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text('Quantidade (g):'),
           Slider(
