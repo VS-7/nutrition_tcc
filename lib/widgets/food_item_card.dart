@@ -42,6 +42,8 @@ class FoodItemCard extends StatelessWidget {
                   IconButton(
                     icon: const Icon(Icons.add_circle_outline_rounded),
                     onPressed: () => onAdd(food),
+                    iconSize: 29,
+                    //color: Color(0xFFA7E100),
                   ),
                 ],
               ),
@@ -49,7 +51,7 @@ class FoodItemCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('100g', style: TextStyle(fontSize: 14)),
+                  Text('100 g', style: TextStyle(fontSize: 14)),
                   SizedBox(width: 8),
                   Text('${food.energia.toStringAsFixed(1)} kcal', style: TextStyle(fontSize: 14)),
                 ],

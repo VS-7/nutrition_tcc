@@ -117,7 +117,7 @@ Widget _buildFoodInfoContainer() {
         children: [
           Text(
             'Informação nutricional',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
           ),
           SizedBox(height: 16),
           _buildNutrientsList(),
@@ -193,11 +193,29 @@ Widget _buildFoodInfoContainer() {
   Widget _buildNutrientsList() {
     final nutrientsList = [
       {'Categoria': widget.food.categoria},
-      {'Energia': widget.food.energia * _quantity / 100},
-      {'Proteina': widget.food.proteina * _quantity / 100},
-      {'Lipideos': widget.food.lipideos * _quantity / 100},
+      {'Calorias': widget.food.energia * _quantity / 100},
+      {'Proteína': widget.food.proteina * _quantity / 100},
+      {'Lipídeos': widget.food.lipideos * _quantity / 100},
       {'Carboidrato': widget.food.carboidrato * _quantity / 100},
-      
+      {'Colesterol': widget.food.colesterol * _quantity / 100},
+      {'Fibra': widget.food.fibra * _quantity / 100},
+      {'Cálcio': widget.food.calcio * _quantity / 100},
+      {'Magnésio': widget.food.magnesio * _quantity / 100},
+      {'Manganês': widget.food.manganes * _quantity / 100},
+      {'Fósforo': widget.food.fosforo * _quantity / 100},
+      {'Ferro': widget.food.ferro * _quantity / 100},
+      {'Sódio': widget.food.sodio * _quantity / 100},
+      {'Potássio': widget.food.potassio * _quantity / 100},
+      {'Cobre': widget.food.cobre * _quantity / 100},
+      {'Zinco': widget.food.zinco * _quantity / 100},
+      {'Retinol': widget.food.retinol * _quantity / 100},
+      {'Riboflavina': widget.food.riboflavina * _quantity / 100},
+      {'Vitamina C': widget.food.vitc * _quantity / 100},
+      {'Vitamina A': widget.food.vita * _quantity / 100},
+      {'Vitamina B1': widget.food.vitb1 * _quantity / 100},
+      {'Vitamina B2': widget.food.vitb2 * _quantity / 100},
+      {'Vitamina B3': widget.food.vitb3 * _quantity / 100},
+      {'Vitamina B6': widget.food.vitb6 * _quantity / 100},
     ];
 
     return ListView.builder(
@@ -227,62 +245,214 @@ Widget _buildFoodInfoContainer() {
     }
   }
 
-  Widget _buildBottomBar() {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      color: Colors.white,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text('Quantidade (g):'),
-          Slider(
-            value: _quantity,
-            min: 1,
-            max: 500,
-            divisions: 499,
-            activeColor: Colors.black,
-            inactiveColor: Colors.grey[300],
-            onChanged: (value) {
-              setState(() {
-                _quantity = value;
-              });
-            },
+Widget _buildBottomBar() {
+  return Container(
+    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    decoration: BoxDecoration(
+      color: Colors.black,
+      borderRadius: BorderRadius.vertical(top: Radius.circular(80)),
+    ),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        IconButton(
+          icon: Icon(Icons.remove_circle_outline, color: Colors.white, size: 22),
+          onPressed: () {
+            setState(() {
+              _quantity = (_quantity - 1).clamp(1, 500);
+            });
+          },
+        ),
+        GestureDetector(
+          onTap: () => _showQuantityInputDialog(),
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey),
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: Text(
+              '${_quantity.toStringAsFixed(0)}g',
+              style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w500),
+            ),
           ),
-        ],
-      ),
-    );
-  }
+        ),
+        IconButton(
+          icon: Icon(Icons.add_circle_outline, color: Colors.white, size: 22),
+          onPressed: () {
+            setState(() {
+              _quantity = (_quantity + 1).clamp(1, 500);
+            });
+          },
+        ),
+      ],
+    ),
+  );
+}
 
-  void _addFood() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('Selecione o tipo de refeição'),
-          content: Column(
+void _showQuantityInputDialog() {
+  String inputValue = _quantity.toStringAsFixed(0);
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (BuildContext context) {
+      return Container(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        decoration: BoxDecoration(
+          color: Colors.black,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(80)),
+        ),
+        child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              ListTile(
-                title: Text('Café da manhã'),
-                onTap: () => _saveMeal('Café da manhã'),
+              Container(
+                width: 40,
+                height: 5,
+                margin: EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  color: Colors.grey[600],
+                  borderRadius: BorderRadius.circular(2.5),
+                ),
               ),
-              ListTile(
-                title: Text('Almoço'),
-                onTap: () => _saveMeal('Almoço'),
+              Text(
+                'Inserir quantidade',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w300,
+                ),
               ),
-              ListTile(
-                title: Text('Jantar'),
-                onTap: () => _saveMeal('Jantar'),
-              ),
-              ListTile(
-                title: Text('Lanche'),
-                onTap: () => _saveMeal('Lanche'),
+              SizedBox(height: 16),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 30),
+                child: Column(
+                  children: [
+                    TextField(
+                    keyboardType: TextInputType.number,
+                  style: TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    suffixText: 'g',
+                    suffixStyle: TextStyle(color: Colors.white70),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white70),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  controller: TextEditingController(text: inputValue),
+                  onChanged: (value) {
+                    inputValue = value;
+                      },
+                    ),
+                    SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      SizedBox(width: 16),
+                      ElevatedButton(
+                        child: Text('OK'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.grey[900],
+                          foregroundColor: Colors.white,
+                          minimumSize: Size(100, 40),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _quantity = double.tryParse(inputValue)?.clamp(1, 500) ?? _quantity;
+                          });
+                          Navigator.of(context).pop();
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
         );
       },
+    );
+  }
+
+  void _addFood() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return Container(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          decoration: BoxDecoration(
+            color: Colors.black,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(80)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 5,
+                margin: EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  color: Colors.grey[600],
+                  borderRadius: BorderRadius.circular(2.5),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Selecione o tipo de refeição',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w300,
+                        color: Colors.white,
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                    _buildMealTypeButton('Café da manhã'),
+                    _buildMealTypeButton('Almoço'),
+                    _buildMealTypeButton('Jantar'),
+                    _buildMealTypeButton('Lanche'),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildMealTypeButton(String mealType) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: ElevatedButton(
+        child: Text(mealType),
+        onPressed: () => _saveMeal(mealType),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.grey[900],
+          foregroundColor: Colors.white,
+          minimumSize: Size(double.infinity, 50),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+        ),
+      ),
     );
   }
 

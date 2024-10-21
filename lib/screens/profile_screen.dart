@@ -9,8 +9,7 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BackgroundContainer(
-      child: Scaffold(
+    return Scaffold(
         backgroundColor: Colors.transparent,
         body: SingleChildScrollView(
           child: Padding(
@@ -41,8 +40,7 @@ class ProfileScreen extends StatelessWidget {
             ),
           ),
         ),
-      ),
-    );
+      );
   }
 
   Widget _buildProfileCard(UserSettings settings) {
