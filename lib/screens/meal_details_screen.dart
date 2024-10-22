@@ -107,6 +107,24 @@ class MealDetailsScreen extends StatelessWidget {
     double totalCarbs = meals.fold(0, (sum, meal) => sum + meal.food.carboidrato * meal.quantity);
     double totalFat = meals.fold(0, (sum, meal) => sum + meal.food.lipideos * meal.quantity);
 
+    String imagePath;
+    switch (mealType.toLowerCase()) {
+      case 'café da manhã':
+        imagePath = 'assets/images/coffe.png';
+        break;
+      case 'almoço':
+        imagePath = 'assets/images/lunch.png';
+        break;
+      case 'jantar':
+        imagePath = 'assets/images/dinner.png';
+        break;
+      case 'lanche':
+        imagePath = 'assets/images/snack.png';
+        break;
+      default:
+        imagePath = 'assets/icon.png';
+    }
+
     return Container(
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -124,6 +142,12 @@ class MealDetailsScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          Image.asset(
+            imagePath,
+            width: 60,
+            height: 60,
+          ),
+          SizedBox(height: 16),
           Text(
             'Resumo da Refeição',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),

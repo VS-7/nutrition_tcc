@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:macro_counter/data/dao.dart';
 import 'package:macro_counter/data/database_helper.dart';
 import 'package:macro_counter/data/food_dao.dart';
@@ -23,7 +24,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 import 'theme/app_theme.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
   runApp(const MyApp());
 }
 
@@ -59,7 +65,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (ctx) => tacoMealProvider),
       ],
       child: MaterialApp(
-        title: 'Macro Tracker',
+        title: 'Nutrition TCC',
         theme: AppTheme.themeData,
         home: FutureBuilder<bool>(
           future: _checkFirstSeen(),

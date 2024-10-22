@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../screens/add_meal_screen.dart';
-import '../screens/meal_details_screen.dart';
-import '../providers/taco_meal_provider.dart';
-import '../providers/user_settings_provider.dart';
-import '../models/taco_meal.dart';
-import '../models/user_settings.dart';
+import '../../screens/add_meal_screen.dart';
+import '../../screens/meal_details_screen.dart';
+import '../../providers/taco_meal_provider.dart';
+import '../../providers/user_settings_provider.dart';
+import '../../models/taco_meal.dart';
+import '../../models/user_settings.dart';
 
 class MealPlanner extends StatelessWidget {
   final DateTime selectedDate;

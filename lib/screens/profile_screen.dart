@@ -2,136 +2,85 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../widgets/background_container.dart';
 import '../providers/user_settings_provider.dart';
+import '../providers/taco_meal_provider.dart';
 import '../models/user_settings.dart';
+import '../models/taco_meal.dart';
+import '../widgets/profile_screen_widgets/user_goals_widget.dart';
+import '../widgets/profile_screen_widgets/profile_card_widget.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({Key? key}) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: Colors.transparent,
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                SizedBox(height: 20),
-                Consumer<UserSettingsProvider>(
-                  builder: (context, userSettingsProvider, child) {
-                    return FutureBuilder<UserSettings?>(
-                      future: userSettingsProvider.object,
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return CircularProgressIndicator();
-                        } else if (snapshot.hasError) {
-                          return Text('Erro ao carregar dados do usuário');
-                        } else if (snapshot.hasData) {
-                          return _buildProfileCard(snapshot.data!);
-                        } else {
-                          return Text('Nenhum dado de usuário encontrado');
-                        }
-                      },
-                    );
-                  },
-                ),
-                // Adicione mais widgets aqui para outras informações do perfil
-              ],
-            ),
-          ),
-        ),
-      );
+  Map<String, double> getDailyTotal(List<TacoMeal> mealList) {
+    double calorie = 0;
+    double carb = 0;
+    double protein = 0;
+    double fat = 0;
+    for (var meal in mealList) {
+      calorie += meal.food.energia * meal.quantity;
+      carb += meal.food.carboidrato * meal.quantity;
+      protein += meal.food.proteina * meal.quantity;
+      fat += meal.food.lipideos * meal.quantity;
+    }
+    return {
+      "calorie": calorie,
+      "carb": carb,
+      "protein": protein,
+      "fat": fat,
+    };
   }
 
-  Widget _buildProfileCard(UserSettings settings) {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                CircleAvatar(
-                  radius: 30,
-                  backgroundImage: AssetImage('assets/images/icon.png'),
-                ),
-                SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Usuário', // Você pode adicionar um campo de nome ao UserSettings se necessário
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Icon(Icons.cake, size: 16, color: Colors.grey),
-                          SizedBox(width: 4),
-                          Text(
-                            '${settings.age} Anos',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey,
+  @override
+  Widget build(BuildContext context) {
+    final mealProvider = Provider.of<TacoMealProvider>(context);
+    final settingsProvider = Provider.of<UserSettingsProvider>(context);
+
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              SizedBox(height: 20),
+              Consumer<UserSettingsProvider>(
+                builder: (context, userSettingsProvider, child) {
+                  return FutureBuilder<UserSettings?>(
+                    future: userSettingsProvider.object,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator();
+                      } else if (snapshot.hasError) {
+                        return Text('Erro ao carregar dados do usuário');
+                      } else if (snapshot.hasData) {
+                        List<TacoMeal> mealList = mealProvider.meals.where((meal) =>
+                          meal.date.year == DateTime.now().year &&
+                          meal.date.month == DateTime.now().month &&
+                          meal.date.day == DateTime.now().day
+                        ).toList();
+
+                        Map<String, double> consumedMacros = getDailyTotal(mealList);
+                        double consumedCalories = consumedMacros['calorie']!;
+
+                        return Column(
+                          children: [
+                            ProfileCardWidget(
+                              settings: snapshot.data!,
+                              caloriesConsumed: consumedCalories,
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Kcal Restante',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  '${settings.calorieGoal.toStringAsFixed(0)}',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.green,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Objetivo',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  settings.goal,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.blue,
-                  ),
-                ),
-              ],
-            ),
-          ],
+                            SizedBox(height: 20),
+                            UserGoalsWidget(settings: snapshot.data!),
+                          ],
+                        );
+                      } else {
+                        return Text('Nenhum dado de usuário encontrado');
+                      }
+                    },
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

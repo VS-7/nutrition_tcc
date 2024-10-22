@@ -5,7 +5,7 @@ import '../widgets/food_item_card.dart';
 import '../models/taco_food.dart';
 import '../models/taco_meal.dart';
 import '../providers/taco_meal_provider.dart';
-import '../widgets/add_food_bottom_sheet.dart';
+import '../dialogs/add_food_bottom_sheet.dart';
 import '../screens/selected_foods_screen.dart';
 import 'package:provider/provider.dart';
 
