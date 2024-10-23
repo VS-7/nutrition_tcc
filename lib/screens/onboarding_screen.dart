@@ -191,36 +191,65 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Widget _buildOptionButton(String text, String emoji, String? currentValue) {
+    bool isSelected = currentValue == text;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: ElevatedButton(
-        onPressed: () => setState(() {
-          if (text.contains('Masculino') || text.contains('Feminino')) {
-            gender = text;
-          } else if (text.contains('Peso')) {
-            goal = text;
-          } else {
-            activityLevel = text;
-          }
-        }),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(emoji, style: TextStyle(fontSize: 24)),
-            SizedBox(width: 10),
-            Text(text, style: TextStyle(fontSize: 16)),
-          ],
-        ),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: currentValue == text ? Colors.white : Colors.white,
-          foregroundColor: currentValue == text ? Colors.black : Colors.black,
-          side: BorderSide(
-            color: currentValue == text ? Theme.of(context).primaryColor : Colors.white,
-            width: 3,
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        child: ElevatedButton(
+          onPressed: () => setState(() {
+            if (text.contains('Masculino') || text.contains('Feminino')) {
+              gender = text;
+            } else if (text.contains('Peso')) {
+              goal = text;
+            } else {
+              activityLevel = text;
+            }
+          }),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Container(
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: isSelected ? Theme.of(context).primaryColor : Colors.grey.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Text(emoji, style: TextStyle(fontSize: 24)),
+              ),
+              SizedBox(width: 16),
+              Text(
+                text,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                  color: isSelected ? Theme.of(context).primaryColor : Colors.black87,
+                ),
+              ),
+              Spacer(),
+              if (isSelected)
+                Icon(
+                  Icons.check_circle,
+                  color: Theme.of(context).primaryColor,
+                  size: 24,
+                ),
+            ],
           ),
-          minimumSize: Size(double.infinity, 80),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.white,
+            foregroundColor: isSelected ? Theme.of(context).primaryColor : Colors.black87,
+            elevation: isSelected ? 4 : 0,
+            shadowColor: isSelected ? Theme.of(context).primaryColor.withOpacity(0.5) : Colors.transparent,
+            side: BorderSide(
+              color: isSelected ? Theme.of(context).primaryColor : Colors.grey.withOpacity(0.3),
+              width: 2,
+            ),
+            minimumSize: Size(double.infinity, 70),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           ),
         ),
       ),

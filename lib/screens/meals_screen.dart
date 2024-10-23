@@ -6,7 +6,9 @@ import 'package:macro_counter/utils/date_formatter.dart';
 import 'package:macro_counter/widgets/circular_progress_indicator.dart';
 import 'package:macro_counter/widgets/meals_screen_widgets/meal_planner.dart';
 import 'package:macro_counter/widgets/meals_screen_widgets/daily_summary_widget.dart';
+import 'package:macro_counter/widgets/meals_screen_widgets/meal_recommendation_widget.dart';
 import 'package:provider/provider.dart';
+import 'package:macro_counter/screens/statistics_screen.dart';
 
 class MealsScreen extends StatefulWidget {
   const MealsScreen({super.key});
@@ -64,15 +66,70 @@ class _MealsScreenState extends State<MealsScreen> {
     double consumedProteins = consumedMacros['protein']!;
     double consumedFats = consumedMacros['fat']!;
 
-  Widget _buildDragHandle() {
-    return Container(
-      width: 40,
-      height: 5,
-      margin: EdgeInsets.symmetric(vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.grey[600],
-        borderRadius: BorderRadius.circular(2.5),
-      ),
+    return FutureBuilder(
+      future: settingsProvider.object,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasData) {
+          final data = snapshot.data;
+          double calorieGoal = data!.calorieGoal;
+          double carbGoal = data.carbGoal;
+          double proteinGoal = data.proteinGoal;
+          double fatGoal = data.fatGoal;
+          
+          return Column(
+            children: [
+              AppBar(
+                title: Text(formatter.formatDate(selectedDate), style: TextStyle(color: Colors.black)),
+                backgroundColor: Colors.transparent,
+                actions: [
+                  IconButton(
+                    icon: Icon(Icons.calendar_month, color: Colors.black),
+                    onPressed: _showDatePicker,
+                  ),
+                ],
+              ),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      SizedBox(height: 20),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => StatisticsScreen(selectedDate: selectedDate),
+                            ),
+                          );
+                        },
+                        child: DailySummaryWidget(
+                          consumedCalories: consumedCalories,
+                          calorieGoal: calorieGoal,
+                          consumedCarbs: consumedCarbs,
+                          carbGoal: carbGoal,
+                          consumedProteins: consumedProteins,
+                          proteinGoal: proteinGoal,
+                          consumedFats: consumedFats,
+                          fatGoal: fatGoal,
+                        ),
+                      ),
+                      SizedBox(height: 16),
+                      MealRecommendationWidget(),
+                      SizedBox(height: 16),
+                      MealPlanner(selectedDate: selectedDate),
+                      SizedBox(height: 16),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          );
+        } else {
+          return Text("Algo deu errado...");
+        }
+      }
     );
   }
 
@@ -140,58 +197,15 @@ class _MealsScreenState extends State<MealsScreen> {
     );
   }
 
-    return FutureBuilder(
-      future: settingsProvider.object,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasData) {
-          final data = snapshot.data;
-          double calorieGoal = data!.calorieGoal;
-          double carbGoal = data.carbGoal;
-          double proteinGoal = data.proteinGoal;
-          double fatGoal = data.fatGoal;
-          
-          return Column(
-            children: [
-              AppBar(
-                title: Text(formatter.formatDate(selectedDate), style: TextStyle(color: Colors.black)),
-                backgroundColor: Colors.transparent,
-                actions: [
-                  IconButton(
-                    icon: Icon(Icons.calendar_month, color: Colors.black),
-                    onPressed: _showDatePicker,
-                  ),
-                ],
-              ),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      SizedBox(height: 20),
-                      DailySummaryWidget(
-                        consumedCalories: consumedCalories,
-                        calorieGoal: calorieGoal,
-                        consumedCarbs: consumedCarbs,
-                        carbGoal: carbGoal,
-                        consumedProteins: consumedProteins,
-                        proteinGoal: proteinGoal,
-                        consumedFats: consumedFats,
-                        fatGoal: fatGoal,
-                      ),
-                      SizedBox(height: 20),
-                      MealPlanner(selectedDate: selectedDate),
-                      SizedBox(height: 16),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          );
-        } else {
-          return Text("Algo deu errado...");
-        }
-      }
+  Widget _buildDragHandle() {
+    return Container(
+      width: 40,
+      height: 5,
+      margin: EdgeInsets.symmetric(vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.grey[600],
+        borderRadius: BorderRadius.circular(2.5),
+      ),
     );
   }
 }

@@ -40,7 +40,7 @@ dependencies:
   path: ^1.9.0
   shared_preferences: ^2.0.9
   provider: ^6.1.2
-  fl_chart: ^0.68.0
+  fl_chart: ^0.69.0
 
 dev_dependencies:
   flutter_test:
@@ -66,6 +66,7 @@ flutter:
 
   assets:
     - assets/images/background.png
+    - assets/images/daily_background.png
     # Imagens de icones de comidas
     - assets/images/coffe.png
     - assets/images/lunch.png

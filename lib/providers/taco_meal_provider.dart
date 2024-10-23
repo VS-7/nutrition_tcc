@@ -57,4 +57,16 @@ class TacoMealProvider with ChangeNotifier {
       0, (sum, meal) => sum + meal.food.energia * meal.quantity
     );
   }
+
+  // Novo método para buscar refeições semanais
+  Future<List<TacoMeal>> getWeeklyMeals(DateTime endDate) async {
+    DateTime startDate = endDate.subtract(Duration(days: 6));
+    List<TacoMeal> weeklyMeals = [];
+    for (int i = 0; i <= 6; i++) {
+      DateTime currentDate = startDate.add(Duration(days: i));
+      List<TacoMeal> dailyMeals = await _tacoMealDao.getMealsByDate(currentDate);
+      weeklyMeals.addAll(dailyMeals);
+    }
+    return weeklyMeals;
+  }
 }
