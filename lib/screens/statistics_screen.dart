@@ -74,7 +74,7 @@ class StatisticsScreen extends StatelessWidget {
                           children: [
                             _buildMacroProgress('Carboidratos', carbProgress, Color(0xFFA7E100), '🌾'),
                             _buildMacroProgress('Proteínas', proteinProgress, Color(0xFFA7E100), '🍗'),
-                            _buildMacroProgress('Lípidos', fatProgress, Color(0xFFA7E100), '🥑'),
+                            _buildMacroProgress('Gorduras', fatProgress, Color(0xFFA7E100), '🥑'),
                           ],
                         ),
                         SizedBox(height: 16),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:fl_chart/fl_chart.dart';
 import '../providers/taco_meal_provider.dart';
 import '../models/taco_meal.dart';
 import '../widgets/background_container.dart';

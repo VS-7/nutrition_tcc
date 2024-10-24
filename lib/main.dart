@@ -67,42 +67,19 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Nutrition TCC',
         theme: AppTheme.themeData,
-        home: FutureBuilder<bool>(
-          future: _checkFirstSeen(),
+        home: FutureBuilder<UserSettings?>(
+          future: userSettingsProvider.object,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return CircularProgressIndicator();
-            } else if (snapshot.data == true) {
-              return WelcomeScreen();
+            } else if (snapshot.hasData && snapshot.data!.onboardingCompleted) {
+              return ScaffoldScreen();
             } else {
-              return FutureBuilder<UserSettings?>(
-                future: userSettingsProvider.object,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return CircularProgressIndicator();
-                  } else if (snapshot.hasData && snapshot.data!.onboardingCompleted) {
-                    return ScaffoldScreen();
-                  } else {
-                    return OnboardingScreen();
-                  }
-                },
-              );
+              return WelcomeScreen();
             }
           },
         ),
       ),
     );
-  }
-
-  Future<bool> _checkFirstSeen() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool _seen = (prefs.getBool('seen') ?? false);
-
-    if (!_seen) {
-      await prefs.setBool('seen', true);
-      return true;
-    }
-
-    return false;
   }
 }

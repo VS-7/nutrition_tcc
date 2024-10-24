@@ -40,7 +40,6 @@ dependencies:
   path: ^1.9.0
   shared_preferences: ^2.0.9
   provider: ^6.1.2
-  fl_chart: ^0.69.0
 
 dev_dependencies:
   flutter_test:
@@ -73,6 +72,7 @@ flutter:
     - assets/images/snack.png
     - assets/images/dinner.png
     - assets/images/icon.png
+    - assets/images/logo.png
     # Banco de dados com a tabela de alimentos TACO
     - assets/databases/taco.db
 

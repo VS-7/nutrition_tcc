@@ -10,7 +10,7 @@ class WelcomeScreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
         body: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            padding: const EdgeInsets.symmetric(horizontal: 0),
             child: Column(
               children: [
                 Expanded(
@@ -18,11 +18,11 @@ class WelcomeScreen extends StatelessWidget {
                   child: _buildHeader(),
                 ),
                 Expanded(
-                  flex: 6,
+                  flex: 12,
                   child: _buildContent(),
                 ),
                 Expanded(
-                  flex: 1,
+                  flex: 2,
                   child: _buildFooter(context),
                 ),
               ],
@@ -36,10 +36,20 @@ class WelcomeScreen extends StatelessWidget {
   Widget _buildHeader() {
     return Align(
       alignment: Alignment.bottomCenter,
-      child: Text(
-        'Bem Vindo Ao\nNutrition TCC',
-        style: TextStyle(fontSize: 28, fontWeight: FontWeight.w500),
+      child: RichText(
         textAlign: TextAlign.center,
+        text: TextSpan(
+          children: [
+            TextSpan(
+              text: 'Bem vindo ao\n',
+              style: TextStyle(fontWeight: FontWeight.w300, fontSize: 28, color: Colors.black),
+            ),
+            TextSpan(
+              text: 'Nutrition TCC',
+              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 35, color: Colors.black),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -48,13 +58,16 @@ class WelcomeScreen extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Image.asset(
-          'assets/images/icon.png',
-          height: 260,
+        Container(
+          width: 240,
+          child: Image.asset(
+            'assets/images/logo.png',
+            //fit: BoxFit.fitWidth,
+          ),
         ),
         SizedBox(height: 40),
-        Text(
-          'Acompanhe Suas Refeições\nE Alcance Seus Objetivos\nNutricionais!',
+      Text(
+          'Conte calorias, receba dietas\npersonalizadas e alcance\nseus objetivos nutricionais!',
           style: TextStyle(fontSize: 22),
           textAlign: TextAlign.center,
         ),
@@ -62,11 +75,11 @@ class WelcomeScreen extends StatelessWidget {
     );
   }
 
-   Widget _buildFooter(BuildContext context) {
+  Widget _buildFooter(BuildContext context) {
     return Align(
       alignment: Alignment.topCenter,
       child: Padding(
-        padding: EdgeInsets.only(bottom: 20),
+        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         child: ElevatedButton(
           onPressed: () {
             Navigator.of(context).pushReplacement(
@@ -85,24 +98,20 @@ class WelcomeScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              Container(
-                padding: EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Colors.black,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(Icons.north_east, size: 24, color: Colors.white),
+              Padding(
+                padding: EdgeInsets.only(right: 20),
+                child: Icon(Icons.north_east, size: 30, color: Colors.white),
               ),
             ],
           ),
           style: ElevatedButton.styleFrom(
-            backgroundColor: Color(0xFFA7E100),
-            foregroundColor: Colors.black,
+            backgroundColor: Colors.black,
+            foregroundColor: Colors.white,
             padding: EdgeInsets.only(left: 5, top: 15, bottom: 15, right: 5),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(30),
             ),
-            minimumSize: Size(double.infinity, 60),
+            minimumSize: Size(double.infinity, 70),
           ),
         ),
       ),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:macro_counter/providers/food_provider.dart';
 import 'package:macro_counter/providers/meal_provider.dart';
 import 'package:macro_counter/screens/food_form_screen.dart';
-import 'package:macro_counter/screens/foods_screen.dart';
+import 'package:macro_counter/screens/meal_recommendation_screen.dart';
 import 'package:macro_counter/screens/meal_form_screen.dart';
 import 'package:macro_counter/screens/meals_screen.dart';
 import 'package:macro_counter/screens/settings_screen.dart';
@@ -33,8 +33,8 @@ class _ScaffoldScreenState extends State<ScaffoldScreen> {
         },
       },
       {
-        "title": "Foods",
-        "screen": FoodsScreen(),
+        "title": "Recomendação Alimentar",
+        "screen": MealRecommendationScreen(),
         "fabAction": (BuildContext context) {
           Navigator.push(
             context,

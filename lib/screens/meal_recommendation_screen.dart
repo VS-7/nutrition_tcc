@@ -6,25 +6,10 @@ class MealRecommendationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BackgroundContainer(
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            'Recomendação de Refeição',
-            style: TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.w600,
-              fontSize: 20,
-            ),
-          ),
-          backgroundColor: Colors.transparent,
-          foregroundColor: Colors.black,
-          elevation: 0,
-        ),
+    return Scaffold(
         backgroundColor: Colors.transparent,
         body: Center(
           child: Text('Conteúdo da recomendação de refeição virá aqui.'),
-        ),
       ),
     );
   }

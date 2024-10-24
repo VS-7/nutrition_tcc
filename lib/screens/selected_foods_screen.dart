@@ -58,16 +58,29 @@ class _SelectedFoodsScreenState extends State<SelectedFoodsScreen> {
                 itemCount: widget.selectedFoods.length,
                 itemBuilder: (context, index) {
                   final meal = widget.selectedFoods[index];
-                  return Card(
-                    margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  return Container(
+                    margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+                    padding: EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.2),
+                          spreadRadius: 2,
+                          blurRadius: 5,
+                          offset: Offset(0, 3),
+                        ),
+                      ],
+                    ),
                     child: ListTile(
                       title: Text(
                         meal.food.nome,
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(fontWeight: FontWeight.w500),
                       ),
                       subtitle: Text('${(meal.quantity * 100).toStringAsFixed(0)}g'),
                       trailing: IconButton(
-                        icon: Icon(Icons.delete, color: Colors.red),
+                        icon: Icon(Icons.cancel, size: 30), // Alterado para ícone de "X" com círculo
                         onPressed: () {
                           widget.onRemove(meal);
                           setState(() {});

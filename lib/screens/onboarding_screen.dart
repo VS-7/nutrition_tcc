@@ -21,6 +21,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   String? activityLevel;
   String? goal;
 
+  // Add TextEditingControllers
+  final TextEditingController _ageController = TextEditingController();
+  final TextEditingController _weightController = TextEditingController();
+  final TextEditingController _heightController = TextEditingController();
+
+  // Add this new variable
+  double _opacity = 1.0;
+
   List<Widget> get _steps => [
     _buildGoalStep(),
     _buildAgeStep(),
@@ -28,23 +36,47 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     _buildHeightStep(),
     _buildGenderStep(),
     _buildActivityLevelStep(),
+    _buildFinalStep(), // Add this new step
   ];
+
+  @override
+  void dispose() {
+    _ageController.dispose();
+    _weightController.dispose();
+    _heightController.dispose();
+    super.dispose();
+  }
 
   Widget _buildAgeStep() {
     return _buildInputStep(
-      'Qual é a sua idade?',
+      'Quantos anos você tem?',
       TextFormField(
+        controller: _ageController,
         keyboardType: TextInputType.number,
         decoration: InputDecoration(
           hintText: 'Idade',
+          prefixIcon: Padding(
+            padding: EdgeInsets.all(25),
+            child: Text('🎂', style: TextStyle(fontSize: 24)),
+          ),
+          suffixText: 'anos',
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(20),
-            borderSide: BorderSide.none,
-          ),    
+            borderSide: BorderSide(color: Colors.grey[300]!, width: 2),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+            borderSide: BorderSide(color: Colors.grey[300]!, width: 2),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+            borderSide: BorderSide(color: Color(0xFFB0FF6B), width: 2),
+          ),
           filled: true,
           fillColor: Colors.white,
-          contentPadding: EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+          contentPadding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
         ),
+        style: TextStyle(fontSize: 18),
         validator: (value) {
           if (value == null || value.isEmpty) {
             return 'Este campo é obrigatório';
@@ -72,19 +104,34 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   Widget _buildWeightStep() {
     return _buildInputStep(
-      'Qual é o seu peso?',
-     TextFormField(
-        keyboardType: TextInputType.number,
+      'Quanto você pesa atualmente?',
+      TextFormField(
+        controller: _weightController,
+        keyboardType: TextInputType.numberWithOptions(decimal: true),
         decoration: InputDecoration(
-          hintText: 'Peso (kg)',
+          hintText: 'Peso',
+          prefixIcon: Padding(
+            padding: EdgeInsets.all(25),
+            child: Text('⚖️', style: TextStyle(fontSize: 24)),
+          ),
+          suffixText: 'kg',
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(20),
-            borderSide: BorderSide.none,
-          ),    
+            borderSide: BorderSide(color: Colors.grey[300]!, width: 2),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+            borderSide: BorderSide(color: Colors.grey[300]!, width: 2),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+            borderSide: BorderSide(color: Color(0xFFB0FF6B), width: 2),
+          ),
           filled: true,
           fillColor: Colors.white,
-          contentPadding: EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+          contentPadding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
         ),
+        style: TextStyle(fontSize: 18),
         validator: (value) {
           if (value == null || value.isEmpty) {
             return 'Este campo é obrigatório';
@@ -114,17 +161,32 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     return _buildInputStep(
       'Qual é a sua altura?',
       TextFormField(
-        keyboardType: TextInputType.number,
+        controller: _heightController,
+        keyboardType: TextInputType.numberWithOptions(decimal: true),
         decoration: InputDecoration(
-          hintText: 'Altura (cm)',
+          hintText: 'Altura',
+          prefixIcon: Padding(
+            padding: EdgeInsets.all(25),
+            child: Text('📏', style: TextStyle(fontSize: 24)),
+          ),
+          suffixText: 'cm',
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(20),
-            borderSide: BorderSide.none,
-          ),    
+            borderSide: BorderSide(color: Colors.grey[300]!, width: 2),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+            borderSide: BorderSide(color: Colors.grey[300]!, width: 2),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+            borderSide: BorderSide(color: Color(0xFFB0FF6B), width: 2),
+          ),
           filled: true,
           fillColor: Colors.white,
-          contentPadding: EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+          contentPadding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
         ),
+        style: TextStyle(fontSize: 18),
         validator: (value) {
           if (value == null || value.isEmpty) {
             return 'Este campo é obrigatório';
@@ -164,7 +226,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   Widget _buildActivityLevelStep() {
     return _buildInputStep(
-      'Qual é o seu nível de atividade?',
+      'Como você descreveria seu nível de atividade?',
       Column(
         children: [
           _buildOptionButton('Sedentário', '🛋️', activityLevel),
@@ -179,12 +241,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   Widget _buildGoalStep() {
     return _buildInputStep(
-      'Qual é o seu objetivo?',
+      'Qual objetivo você tem em mente?',
       Column(
         children: [
-          _buildOptionButton('Perder Peso', '🏃', goal),
-          _buildOptionButton('Manter Peso', '🥗', goal),
-          _buildOptionButton('Ganhar Peso', '💪', goal),
+          _buildOptionButton('Perder Peso', '🥦', goal),
+          _buildOptionButton('Manter Peso', '🥑', goal),
+          _buildOptionButton('Ganhar Peso', '🥩', goal),
         ],
       ),
     );
@@ -211,9 +273,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Container(
-                padding: EdgeInsets.all(12),
+                padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: isSelected ? Theme.of(context).primaryColor : Colors.grey.withOpacity(0.1),
+                  color: Colors.grey[200],
                   shape: BoxShape.circle,
                 ),
                 child: Text(emoji, style: TextStyle(fontSize: 24)),
@@ -223,31 +285,30 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 text,
                 style: TextStyle(
                   fontSize: 16,
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                  color: isSelected ? Theme.of(context).primaryColor : Colors.black87,
+                  color:  Colors.black87,
                 ),
               ),
               Spacer(),
               if (isSelected)
                 Icon(
                   Icons.check_circle,
-                  color: Theme.of(context).primaryColor,
+                  color: Colors.grey[900],
                   size: 24,
                 ),
             ],
           ),
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.white,
-            foregroundColor: isSelected ? Theme.of(context).primaryColor : Colors.black87,
+            backgroundColor: isSelected ? Color(0xFFB0FF6B): Colors.white,
+            foregroundColor:  Colors.black87,
             elevation: isSelected ? 4 : 0,
-            shadowColor: isSelected ? Theme.of(context).primaryColor.withOpacity(0.5) : Colors.transparent,
+            shadowColor: Colors.transparent,
             side: BorderSide(
-              color: isSelected ? Theme.of(context).primaryColor : Colors.grey.withOpacity(0.3),
+              color: isSelected ? Color(0xFFB0FF6B) : Colors.white,
               width: 2,
             ),
-            minimumSize: Size(double.infinity, 70),
+            minimumSize: Size(double.infinity, 60),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15),
+              borderRadius: BorderRadius.circular(20),
             ),
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           ),
@@ -257,20 +318,38 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Widget _buildInputStep(String question, Widget input) {
-    return SingleChildScrollView( // Isso permite rolar se o conteúdo for muito grande
+    List<String> parts = question.split(' ');
+    int splitIndex = parts.length ~/ 2;
+    String firstPart = parts.sublist(0, splitIndex).join(' ');
+    String secondPart = parts.sublist(splitIndex).join(' ');
+
+    return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch, // Isso ajuda a alinhar o conteúdo
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SizedBox(height: 40), // Espaço no topo
+            SizedBox(height: 40),
             Text(
-              question,
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              firstPart,
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 20),
+            Text(
+              secondPart,
+              style: TextStyle(
+                fontSize: 26,
+                fontWeight: FontWeight.normal,
+                color: Colors.black54,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 30),
             input,
           ],
         ),
@@ -278,22 +357,136 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
+    Widget _buildFinalStep() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 120,
+            height: 120,
+            decoration: BoxDecoration(
+              color: Color(0xFFB0FF6B),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.check,
+              color: Colors.black,
+              size: 60,
+            ),
+          ),
+          SizedBox(height: 40),
+          Text(
+            'Tudo pronto!',
+            style: TextStyle(
+              fontSize: 32,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+          SizedBox(height: 20),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 40),
+            child: Text(
+              'Vamos começar sua jornada para uma vida mais saudável.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 18,
+                color: Colors.black54,
+                height: 1.5,
+              ),
+            ),
+          ),
+          SizedBox(height: 60),
+          ElevatedButton(
+            onPressed: _submitForm,
+            child: Text(
+              'Começar',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.black,
+              foregroundColor: Colors.white,
+              minimumSize: Size(200, 60),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
+              elevation: 5,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _nextStep() {
     if (_currentStep < _steps.length - 1) {
       bool isValid = true;
+      String errorMessage = '';
       
       // Validação específica para cada etapa
-      if (_currentStep == 1 && age == null) isValid = false; // Idade
-      if (_currentStep == 2 && weight == null) isValid = false; // Peso
-      if (_currentStep == 3 && height == null) isValid = false; // Altura
-      if (_currentStep == 4 && gender == null) isValid = false; // Gênero
-      if (_currentStep == 5 && activityLevel == null) isValid = false; // Nível de atividade
+      switch (_currentStep) {
+        case 0:
+          if (goal == null) {
+            isValid = false;
+            errorMessage = 'Por favor, selecione um objetivo.';
+          }
+          break;
+        case 1:
+          if (age == null) {
+            isValid = false;
+            errorMessage = 'Por favor, insira sua idade.';
+          }
+          break;
+        case 2:
+          if (weight == null) {
+            isValid = false;
+            errorMessage = 'Por favor, insira seu peso.';
+          }
+          break;
+        case 3:
+          if (height == null) {
+            isValid = false;
+            errorMessage = 'Por favor, insira sua altura.';
+          }
+          break;
+        case 4:
+          if (gender == null) {
+            isValid = false;
+            errorMessage = 'Por favor, selecione seu gênero.';
+          }
+          break;
+        case 5:
+          if (activityLevel == null) {
+            isValid = false;
+            errorMessage = 'Por favor, selecione seu nível de atividade.';
+          }
+          break;
+      }
       
       if (isValid) {
-        setState(() => _currentStep++);
+        setState(() {
+          _opacity = 0.0; // Start fade-out
+        });
+        
+        Future.delayed(Duration(milliseconds: 300), () {
+          setState(() {
+            _currentStep++;
+            // Clear the text field when moving to the next step
+            if (_currentStep == 2) _ageController.clear();
+            if (_currentStep == 3) _weightController.clear();
+            if (_currentStep == 4) _heightController.clear();
+          });
+          
+          Future.delayed(Duration(milliseconds: 50), () {
+            setState(() {
+              _opacity = 1.0; // Start fade-in
+            });
+          });
+        });
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Por favor, preencha o campo corretamente.')),
+          SnackBar(content: Text(errorMessage)),
         );
       }
     } else {
@@ -303,7 +496,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   void _previousStep() {
     if (_currentStep > 0) {
-      setState(() => _currentStep--);
+      setState(() {
+        _opacity = 0.0; // Start fade-out
+      });
+      
+      Future.delayed(Duration(milliseconds: 300), () {
+        setState(() {
+          _currentStep--;
+        });
+        
+        Future.delayed(Duration(milliseconds: 50), () {
+          setState(() {
+            _opacity = 1.0; // Start fade-in
+          });
+        });
+      });
     }
   }
 
@@ -315,7 +522,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       double tdee = calculateTDEE(bmr);
       double calorieGoal = calculateCalorieGoal(tdee);
       
-      // Calcular as metas calóricas para cada refeição
+      // Calcular as metas calóricas para cada refeiço
       double breakfastCalorieGoal = calorieGoal * 0.25; // 25% (média entre 15% e 35%)
       double lunchCalorieGoal = calorieGoal * 0.30; // 30% (média entre 15% e 40%)
       double dinnerCalorieGoal = calorieGoal * 0.30; // 30% (média entre 15% e 40%)
@@ -436,6 +643,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     }
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     return BackgroundContainer(
@@ -474,23 +683,33 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           child: Form(
             key: _formKey,
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(5),
               child: Column(
                 children: [
-                  Expanded(child: _steps[_currentStep]),
-                  SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: _nextStep,
-                    child: Text(_currentStep == _steps.length - 1 ? 'Finalizar' : 'Continuar', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).primaryColor,
-                      foregroundColor: Theme.of(context).textTheme.bodyLarge!.color,
-                      minimumSize: Size(double.infinity, 60),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25),
-                      ),
+                  Expanded(
+                    child: AnimatedOpacity(
+                      opacity: _opacity,
+                      duration: Duration(milliseconds: 300),
+                      child: _steps[_currentStep],
                     ),
                   ),
+                  SizedBox(height: 20),
+                  if (_currentStep < _steps.length - 1) // Only show the button if it's not the final step
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                      child: ElevatedButton(
+                        onPressed: _nextStep,
+                        child: Text('Continuar', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.black,
+                          foregroundColor: Colors.white,
+                          minimumSize: Size(double.infinity, 70),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),
