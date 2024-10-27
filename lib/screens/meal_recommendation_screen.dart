@@ -10,7 +10,7 @@ class MealRecommendationScreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
         body: Center(
           child: Text('Conteúdo da recomendação de refeição virá aqui.'),
-      ),
+      ), 
     );
   }
 }

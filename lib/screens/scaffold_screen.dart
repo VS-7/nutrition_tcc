@@ -227,8 +227,17 @@ class _ScaffoldScreenState extends State<ScaffoldScreen> {
                   label: 'Diário',
                 ),
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.fastfood),
-                  label: 'Foods',
+                  icon: Stack(
+                    children: [
+                      Icon(Icons.restaurant_menu),
+                      Positioned(
+                        right: 0,
+                        bottom: 0,
+                        child: Icon(Icons.auto_awesome, size: 14),
+                      ),
+                    ],
+                  ),
+                  label: 'Otimize',
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.person),

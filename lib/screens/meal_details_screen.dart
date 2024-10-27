@@ -49,53 +49,84 @@ class MealDetailsScreen extends StatelessWidget {
                   ),
                 ),
                 // Second page: Food list
-                Column(
+                Stack(
                   children: [
-                    Expanded(
-                      child: ListView.builder(
-                        itemCount: meals.length,
-                        itemBuilder: (context, index) {
-                          TacoMeal meal = meals[index];
-                          return ListTile(
-                            title: Text(meal.food.nome ?? 'Alimento sem nome'),
-                            subtitle: Text('${meal.quantity * 100} g'),
-                            trailing: IconButton(
-                              icon: Icon(Icons.close, color: Colors.red),
-                              onPressed: () async {
-                                await mealProvider.deleteMeal(meal.id!);
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('Alimento removido')),
-                                );
-                              },
+                    meals.isEmpty
+                      ? Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Text(
+                              'Nenhum alimento adicionado ainda.',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.black54,
+                              ),
+                              textAlign: TextAlign.center,
                             ),
-                          );
-                        },
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: ElevatedButton(
-                        child: Text('Adicionar Alimento'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.black,
-                          padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                          ),
+                        )
+                      : ListView.builder(
+                          itemCount: meals.length,
+                          itemBuilder: (context, index) {
+                            TacoMeal meal = meals[index];
+                            return Container(
+                              margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+                              padding: EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(15),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.2),
+                                    spreadRadius: 2,
+                                    blurRadius: 5,
+                                    offset: Offset(0, 3),
+                                  ),
+                                ],
+                              ),
+                              child: ListTile(
+                                title: Text(
+                                  meal.food.nome ?? 'Alimento sem nome',
+                                  style: TextStyle(fontWeight: FontWeight.w500),
+                                ),
+                                subtitle: Text('${(meal.quantity * 100).toStringAsFixed(0)}g'),
+                                trailing: IconButton(
+                                  icon: Icon(Icons.cancel, size: 30),
+                                  onPressed: () async {
+                                    await mealProvider.deleteMeal(meal.id!);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('Alimento removido')),
+                                    );
+                                  },
+                                ),
+                              ),
+                            );
+                          },
                         ),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => AddMealScreen(mealType: mealType, selectedDate: selectedDate),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
                   ],
                 ),
               ],
             );
           },
         ),
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AddMealScreen(mealType: mealType, selectedDate: selectedDate),
+              ),
+            );
+          },
+          icon: Icon(Icons.add_circle_outline_rounded),
+          label: Text('Adicionar'),
+          backgroundColor: Colors.black,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       ),
     );
   }

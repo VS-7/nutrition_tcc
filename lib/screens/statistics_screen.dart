@@ -40,87 +40,83 @@ class StatisticsScreen extends StatelessWidget {
           return BackgroundContainer(
             child: Scaffold(
               backgroundColor: Colors.transparent,
-              body: Column(
-                children: [
-                  // Parte fixa (não rolável)
-                  Container(
-                    padding: EdgeInsets.fromLTRB(16, 40, 16, 16),
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage('assets/images/daily_background.png'),
-                        fit: BoxFit.cover,
+              body: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.fromLTRB(16, 40, 16, 16),
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage('assets/images/daily_background.png'),
+                          fit: BoxFit.cover,
+                        ),
                       ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        IconButton(
-                          icon: Icon(Icons.arrow_back, color: Colors.white),
-                          onPressed: () => Navigator.pop(context),
-                        ),
-                        SizedBox(height: 16),
-                        Text(
-                          'ACOMPANHAMENTO SEMANAL',
-                          style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w500),
-                        ),
-                        SizedBox(height: 8),
-                        Text(
-                          '7 Dias • ${dateFormatter.formatDate(selectedDate.subtract(Duration(days: 6)))} - ${dateFormatter.formatDate(selectedDate)}',
-                          style: TextStyle(color: Colors.white, fontSize: 14),
-                        ),
-                        SizedBox(height: 24),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            _buildMacroProgress('Carboidratos', carbProgress, Color(0xFFA7E100), '🌾'),
-                            _buildMacroProgress('Proteínas', proteinProgress, Color(0xFFA7E100), '🍗'),
-                            _buildMacroProgress('Gorduras', fatProgress, Color(0xFFA7E100), '🥑'),
-                          ],
-                        ),
-                        SizedBox(height: 16),
-                        //Text('Calorias', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500)),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: LinearProgressIndicator(
-                            value: calorieProgress,
-                            backgroundColor: Colors.white.withOpacity(0.3),
-                            valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFA7E100)),
-                            minHeight: 10,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  // Parte rolável
-                  Expanded(
-                    child: SingleChildScrollView(
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          WeeklyProgressBar(
-                            weeklyData: weeklyStats['dailyCalories']!,
-                            goal: userSettings.calorieGoal,
-                            title: 'Calorias Semanais',
+                          IconButton(
+                            icon: Icon(Icons.arrow_back, color: Colors.white),
+                            onPressed: () => Navigator.pop(context),
                           ),
-                          WeeklyProgressBar(
-                            weeklyData: weeklyStats['dailyCarbs']!,
-                            goal: userSettings.carbGoal,
-                            title: 'Carboidratos Semanais',
+                          SizedBox(height: 16),
+                          Text(
+                            'ACOMPANHAMENTO SEMANAL',
+                            style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w500),
                           ),
-                          WeeklyProgressBar(
-                            weeklyData: weeklyStats['dailyProteins']!,
-                            goal: userSettings.proteinGoal,
-                            title: 'Proteínas Semanais',
+                          SizedBox(height: 8),
+                          Text(
+                            '7 Dias • ${dateFormatter.formatDate(selectedDate.subtract(Duration(days: 6)))} - ${dateFormatter.formatDate(selectedDate)}',
+                            style: TextStyle(color: Colors.white, fontSize: 14),
                           ),
-                          WeeklyProgressBar(
-                            weeklyData: weeklyStats['dailyFats']!,
-                            goal: userSettings.fatGoal,
-                            title: 'Gorduras Semanais',
+                          SizedBox(height: 24),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              _buildMacroProgress('Carboidratos', carbProgress, Color(0xFFA7E100), '🌾'),
+                              _buildMacroProgress('Proteínas', proteinProgress, Color(0xFFA7E100), '🍗'),
+                              _buildMacroProgress('Gorduras', fatProgress, Color(0xFFA7E100), '🥑'),
+                            ],
+                          ),
+                          SizedBox(height: 16),
+                          //Text('Calorias', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500)),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: LinearProgressIndicator(
+                              value: calorieProgress,
+                              backgroundColor: Colors.white.withOpacity(0.3),
+                              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFA7E100)),
+                              minHeight: 10,
+                            ),
                           ),
                         ],
                       ),
                     ),
-                  ),
-                ],
+                    Column(
+                      children: [
+                        WeeklyProgressBar(
+                          weeklyData: weeklyStats['dailyCalories']!,
+                          goal: userSettings.calorieGoal,
+                          title: 'Calorias Semanais',
+                        ),
+                        WeeklyProgressBar(
+                          weeklyData: weeklyStats['dailyCarbs']!,
+                          goal: userSettings.carbGoal,
+                          title: 'Carboidratos Semanais',
+                        ),
+                        WeeklyProgressBar(
+                          weeklyData: weeklyStats['dailyProteins']!,
+                          goal: userSettings.proteinGoal,
+                          title: 'Proteínas Semanais',
+                        ),
+                        WeeklyProgressBar(
+                          weeklyData: weeklyStats['dailyFats']!,
+                          goal: userSettings.fatGoal,
+                          title: 'Gorduras Semanais',
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           );

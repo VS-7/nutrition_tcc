@@ -4,6 +4,7 @@ import 'package:macro_counter/providers/user_settings_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:macro_counter/screens/scaffold_screen.dart';
 import 'package:macro_counter/widgets/background_container.dart';
+import 'package:macro_counter/services/onboarding_service.dart';
 
 class OnboardingScreen extends StatefulWidget {
   @override
@@ -28,6 +29,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   // Add this new variable
   double _opacity = 1.0;
+
+  final OnboardingService _onboardingService = OnboardingService();
 
   List<Widget> get _steps => [
     _buildGoalStep(),
@@ -518,53 +521,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     if (_formKey.currentState!.validate() && _allFieldsFilled()) {
       _formKey.currentState!.save();
       
-      double bmr = calculateBMR();
-      double tdee = calculateTDEE(bmr);
-      double calorieGoal = calculateCalorieGoal(tdee);
-      
-      // Calcular as metas calóricas para cada refeiço
-      double breakfastCalorieGoal = calorieGoal * 0.25; // 25% (média entre 15% e 35%)
-      double lunchCalorieGoal = calorieGoal * 0.30; // 30% (média entre 15% e 40%)
-      double dinnerCalorieGoal = calorieGoal * 0.30; // 30% (média entre 15% e 40%)
-      double snackCalorieGoal = calorieGoal * 0.15; // 15% (média entre 5% e 15%)
-
-      // Verificar se a soma das calorias das refeições é igual ao total
-      double totalMealCalories = breakfastCalorieGoal + lunchCalorieGoal + dinnerCalorieGoal + snackCalorieGoal;
-      
-      // Ajustar a diferença, se houver
-      if (totalMealCalories != calorieGoal) {
-        double difference = calorieGoal - totalMealCalories;
-        // Distribuir a diferença igualmente entre as refeições
-        double adjustment = difference / 4;
-        breakfastCalorieGoal += adjustment;
-        lunchCalorieGoal += adjustment;
-        dinnerCalorieGoal += adjustment;
-        snackCalorieGoal += adjustment;
-      }
-
-      UserSettings newSettings = UserSettings(
-        calorieGoal: calorieGoal,
-        carbGoal: calorieGoal * 0.5 / 4, // 50% das calorias de carboidratos
-        proteinGoal: calorieGoal * 0.3 / 4, // 30% das calorias de proteínas
-        fatGoal: calorieGoal * 0.2 / 9, // 20% das calorias de gorduras
-        onboardingCompleted: true,
+      UserSettings newSettings = _onboardingService.createUserSettings(
         age: age!,
         weight: weight!,
         height: height!,
         gender: gender!,
         activityLevel: activityLevel!,
         goal: goal!,
-        breakfastCalorieGoal: breakfastCalorieGoal,
-        lunchCalorieGoal: lunchCalorieGoal,
-        dinnerCalorieGoal: dinnerCalorieGoal,
-        snackCalorieGoal: snackCalorieGoal,
       );
 
       Provider.of<UserSettingsProvider>(context, listen: false).addObject(newSettings);
       
       Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => ScaffoldScreen()),
-    );
+        MaterialPageRoute(builder: (context) => ScaffoldScreen()),
+      );
     } else {
       print("Formulário não validado ou campos não preenchidos");
       String missingFields = _getMissingFields();
@@ -593,57 +563,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     if (goal == null) missingFields.add('Objetivo');
     return missingFields.join(', ');
   }
-
-/*
-  // BMR de Harris-Benedict
-  double calculateBMR() {
-    if (gender == 'Masculino') {
-      return 88.362 + (13.397 * weight!) + (4.799 * height!) - (5.677 * age!);
-    } else {
-      return 447.593 + (9.247 * weight!) + (3.098 * height!) - (4.330 * age!);
-    }
-  }
-*/
-
- // BMR de Mifflin-St Jeor
-  double calculateBMR() {
-    if (gender == 'Masculino') {
-      return (10 * weight!) + (6.25 * height!) - (5 * age!) + 5;
-    } else {
-      return (10 * weight!) + (6.25 * height!) - (5 * age!) - 161;
-    }
-  }
-
-
-  double calculateTDEE(double bmr) {
-    switch (activityLevel) {
-      case 'Sedentário':
-        return bmr * 1.2;
-      case 'Levemente Ativo':
-        return bmr * 1.375;
-      case 'Moderadamente Ativo':
-        return bmr * 1.55;
-      case 'Muito Ativo':
-        return bmr * 1.725;
-      case 'Extremamente Ativo':
-        return bmr * 1.9;
-      default:
-        return bmr;
-    }
-  }
-
-  double calculateCalorieGoal(double tdee) {
-    switch (goal) {
-      case 'Perder Peso':
-        return tdee * 0.85; // 15% de déficit calórico
-      case 'Ganhar Peso':
-        return tdee * 1.15; // 15% de superávit calórico
-      default:
-        return tdee; // Manter peso
-    }
-  }
-
-
 
   @override
   Widget build(BuildContext context) {

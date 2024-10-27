@@ -23,7 +23,9 @@ class TacoDao {
     
     for (var table in tables) {
       String tableName = table['name'] as String;
-      if (tableName != 'android_metadata' && tableName != 'sqlite_sequence') {
+      if (tableName != 'android_metadata' && 
+          tableName != 'sqlite_sequence' && 
+          tableName != 'alimentos_otimizacao') {
         List<Map<String, dynamic>> foods = await db.query(tableName);
         allFoods.addAll(foods.map((food) => TacoFood.fromMap(food, tableName)));
       }
@@ -42,7 +44,9 @@ class TacoDao {
     
     for (var table in tables) {
       String tableName = table['name'] as String;
-      if (tableName != 'android_metadata' && tableName != 'sqlite_sequence') {
+      if (tableName != 'android_metadata' && 
+          tableName != 'sqlite_sequence' && 
+          tableName != 'alimentos_otimizacao') {
         List<Map<String, dynamic>> foods = await db.query(
           tableName,
           where: 'Nome LIKE ?',
@@ -63,7 +67,11 @@ class TacoDao {
                                                        whereArgs: ['table']);
     return tables
         .map((table) => table['name'] as String)
-        .where((name) => name != 'android_metadata' && name != 'sqlite_sequence')
+        .where((name) => 
+          name != 'android_metadata' && 
+          name != 'sqlite_sequence' && 
+          name != 'alimentos_otimizacao'
+        )
         .toList();
   }
 }

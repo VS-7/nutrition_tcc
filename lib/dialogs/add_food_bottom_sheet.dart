@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../models/taco_food.dart';
 import '../models/taco_meal.dart';
 
@@ -22,6 +23,21 @@ class AddFoodBottomSheet extends StatefulWidget {
 
 class _AddFoodBottomSheetState extends State<AddFoodBottomSheet> {
   double quantity = 100;
+  TextEditingController _quantityController = TextEditingController();
+  FocusNode _quantityFocusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    _quantityController.text = quantity.toStringAsFixed(0);
+  }
+
+  @override
+  void dispose() {
+    _quantityController.dispose();
+    _quantityFocusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,21 +68,7 @@ class _AddFoodBottomSheetState extends State<AddFoodBottomSheet> {
                     SizedBox(height: 24),
                     _buildNutritionInfo(),
                     SizedBox(height: 24),
-                    Text('Quantidade (g):', style: TextStyle(color: Colors.white)),
-                    Slider(
-                      value: quantity,
-                      min: 1,
-                      max: 500,
-                      divisions: 499,
-                      activeColor: Colors.white,
-                      inactiveColor: Colors.grey[800],
-                      onChanged: (value) {
-                        setState(() {
-                          quantity = value;
-                        });
-                      },
-                    ),
-                    Text('${quantity.toStringAsFixed(0)}g', style: TextStyle(color: Colors.white)),
+                    _buildQuantitySelector(),
                     SizedBox(height: 24),
                     ElevatedButton(
                       child: Text('Adicionar'),
@@ -132,6 +134,69 @@ class _AddFoodBottomSheetState extends State<AddFoodBottomSheet> {
         Text(label, style: TextStyle(fontSize: 12, color: Colors.grey[400])),
       ],
     );
+  }
+
+  Widget _buildQuantitySelector() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        IconButton(
+          icon: Icon(Icons.remove_circle_outline, color: Colors.white, size: 22),
+          onPressed: () {
+            _updateQuantity((quantity - 1).clamp(1, 500));
+          },
+        ),
+        Container(
+          width: 80,
+          child: TextField(
+            controller: _quantityController,
+            focusNode: _quantityFocusNode,
+            keyboardType: TextInputType.number,
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w500),
+            decoration: InputDecoration(
+              isDense: true,
+              contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(15),
+                borderSide: BorderSide(color: Colors.grey),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(15),
+                borderSide: BorderSide(color: Colors.white),
+              ),
+              suffixText: 'g',
+              suffixStyle: TextStyle(color: Colors.white70),
+            ),
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            onChanged: (value) {
+              if (value.isNotEmpty) {
+                _updateQuantity(double.parse(value).clamp(1, 500));
+              }
+            },
+            onSubmitted: (value) {
+              if (value.isEmpty) {
+                _updateQuantity(1);
+              }
+              _quantityFocusNode.unfocus();
+            },
+          ),
+        ),
+        IconButton(
+          icon: Icon(Icons.add_circle_outline, color: Colors.white, size: 22),
+          onPressed: () {
+            _updateQuantity((quantity + 1).clamp(1, 500));
+          },
+        ),
+      ],
+    );
+  }
+
+  void _updateQuantity(double newQuantity) {
+    setState(() {
+      quantity = newQuantity;
+      _quantityController.text = quantity.toStringAsFixed(0);
+    });
   }
 
   void _addFood() {
