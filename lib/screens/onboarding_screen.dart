@@ -4,7 +4,7 @@ import 'package:macro_counter/providers/user_settings_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:macro_counter/screens/scaffold_screen.dart';
 import 'package:macro_counter/widgets/background_container.dart';
-import 'package:macro_counter/services/onboarding_service.dart';
+import 'package:macro_counter/providers/services/onboarding_service.dart';
 
 class OnboardingScreen extends StatefulWidget {
   @override

@@ -35,14 +35,7 @@ class _ScaffoldScreenState extends State<ScaffoldScreen> {
       {
         "title": "Recomendação Alimentar",
         "screen": MealRecommendationScreen(),
-        "fabAction": (BuildContext context) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => FoodFormScreen(),
-            ),
-          );
-        },
+        "fabAction": null,
       },
       {
         "title": "Perfil",

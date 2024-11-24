@@ -1,6 +1,19 @@
 import 'package:macro_counter/models/user_settings.dart';
 
 class OnboardingService {
+
+/*
+  // BMR de Harris-Benedict
+  double calculateBMR() {
+    if (gender == 'Masculino') {
+      return 88.362 + (13.397 * weight!) + (4.799 * height!) - (5.677 * age!);
+    } else {
+      return 447.593 + (9.247 * weight!) + (3.098 * height!) - (4.330 * age!);
+    }
+  }
+*/
+
+ // BMR de Mifflin-St Jeor
   double calculateBMR(double weight, double height, int age, String gender) {
     if (gender == 'Masculino') {
       return (10 * weight) + (6.25 * height) - (5 * age) + 5;
