@@ -7,6 +7,7 @@ class UserSettingsDao implements IoDao<UserSettings> {
   Future<UserSettings?> read() async {
     final prefs = await SharedPreferences.getInstance();
     return UserSettings(
+      name: prefs.getString('name') ?? '',
       calorieGoal: prefs.getDouble('calorieGoal') ?? 0,
       carbGoal: prefs.getDouble('carbGoal') ?? 0,
       proteinGoal: prefs.getDouble('proteinGoal') ?? 0,
@@ -28,6 +29,7 @@ class UserSettingsDao implements IoDao<UserSettings> {
   @override
   Future<int> insert(UserSettings settings) async {
     final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('name', settings.name);
     await prefs.setDouble('calorieGoal', settings.calorieGoal);
     await prefs.setDouble('carbGoal', settings.carbGoal);
     await prefs.setDouble('proteinGoal', settings.proteinGoal);

@@ -1,4 +1,5 @@
 class UserSettings {
+  final String name;
   final double calorieGoal;
   final double carbGoal;
   final double proteinGoal;
@@ -16,6 +17,7 @@ class UserSettings {
   final double snackCalorieGoal;
 
   UserSettings({
+    this.name = '',
     required this.calorieGoal,
     required this.carbGoal,
     required this.proteinGoal,
@@ -32,4 +34,25 @@ class UserSettings {
     required this.dinnerCalorieGoal,
     required this.snackCalorieGoal,
   });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'name': name,
+      'calorieGoal': calorieGoal,
+      'carbGoal': carbGoal,
+      'proteinGoal': proteinGoal,
+      'fatGoal': fatGoal,
+      'onboardingCompleted': onboardingCompleted,
+      'age': age,
+      'weight': weight,
+      'height': height,
+      'gender': gender,
+      'activityLevel': activityLevel,
+      'goal': goal,
+      'breakfastCalorieGoal': breakfastCalorieGoal,
+      'lunchCalorieGoal': lunchCalorieGoal,
+      'dinnerCalorieGoal': dinnerCalorieGoal,
+      'snackCalorieGoal': snackCalorieGoal,
+    };
+  }
 }

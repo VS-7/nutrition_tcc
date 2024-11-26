@@ -5,11 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import '../../data/sqflite_database_helper.dart';
+import '../../models/user_settings.dart';
+import '../../providers/services/user_json_data_provider.dart';
+import '../../providers/user_settings_provider.dart';
+import 'package:provider/provider.dart';
 
 class SyncProvider with ChangeNotifier {
   final SqfliteDatabaseHelper dbHelper = SqfliteDatabaseHelper.instance;
 
-  Future<String?> upload(String userId) async {
+  Future<String?> upload(String userId, UserSettings settings) async {
     final db = FirebaseFirestore.instance;
     final storage = FirebaseStorage.instance;
     await dbHelper.close();
@@ -36,8 +40,9 @@ class SyncProvider with ChangeNotifier {
         }
       }
 
-      // Atualiza a data da última sincronização
+      // Atualiza as informações do usuário
       await db.collection("users").doc(userId).set({
+        ...settings.toMap(),  // Adiciona todas as configurações do usuário
         'lastSync': DateTime.now().toIso8601String(),
       }, SetOptions(merge: true));
 
@@ -48,7 +53,20 @@ class SyncProvider with ChangeNotifier {
     return null;
   }
 
-  Future<String?> download(String userId) async {
+  Future<Map<String, dynamic>?> getUserData(String userId) async {
+    final db = FirebaseFirestore.instance;
+    try {
+      final docSnapshot = await db.collection("users").doc(userId).get();
+      if (!docSnapshot.exists) return null;
+      
+      return docSnapshot.data();
+    } catch (error) {
+      debugPrint("Erro no método 'getUserData' na classe 'SyncProvider': $error");
+      return null;
+    }
+  }
+
+  Future<String?> download(String userId, BuildContext context) async {
     final db = FirebaseFirestore.instance;
     final storage = FirebaseStorage.instance;
     await dbHelper.close();
@@ -61,10 +79,40 @@ class SyncProvider with ChangeNotifier {
 
       await storageRef.writeToFile(dbFile);
 
-      // Verifica se o usuário existe
+      // Verifica se o usuário existe e atualiza dados locais
       final docSnapshot = await db.collection("users").doc(userId).get();
       if (!docSnapshot.exists) {
         return "Usuário não encontrado";
+      }
+
+      // Atualiza os dados locais com os dados da nuvem
+      final userData = docSnapshot.data();
+      if (userData != null) {
+        // Atualiza UserJsonDataProvider
+        final userJsonDataProvider = Provider.of<UserJsonDataProvider>(context, listen: false);
+        await userJsonDataProvider.updateFromCloud(userData);
+
+        // Atualiza UserSettingsProvider
+        final userSettingsProvider = Provider.of<UserSettingsProvider>(context, listen: false);
+        final newSettings = UserSettings(
+          name: userData['name'] ?? '',
+          calorieGoal: (userData['calorieGoal'] ?? 2000.0).toDouble(),
+          carbGoal: (userData['carbGoal'] ?? 250.0).toDouble(),
+          proteinGoal: (userData['proteinGoal'] ?? 150.0).toDouble(),
+          fatGoal: (userData['fatGoal'] ?? 67.0).toDouble(),
+          onboardingCompleted: userData['onboardingCompleted'] ?? false,
+          age: userData['age'] ?? 0,
+          weight: (userData['weight'] ?? 0.0).toDouble(),
+          height: (userData['height'] ?? 0.0).toDouble(),
+          gender: userData['gender'] ?? '',
+          activityLevel: userData['activityLevel'] ?? '',
+          goal: userData['goal'] ?? '',
+          breakfastCalorieGoal: (userData['breakfastCalorieGoal'] ?? 500.0).toDouble(),
+          lunchCalorieGoal: (userData['lunchCalorieGoal'] ?? 700.0).toDouble(),
+          dinnerCalorieGoal: (userData['dinnerCalorieGoal'] ?? 600.0).toDouble(),
+          snackCalorieGoal: (userData['snackCalorieGoal'] ?? 200.0).toDouble(),
+        );
+        await userSettingsProvider.updateObject(newSettings);
       }
 
       // Atualiza a data da última sincronização

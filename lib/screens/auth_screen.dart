@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/services/firebase_auth_provider.dart';
+import '../widgets/background_container.dart';
 
 class AuthScreen extends StatefulWidget {
   final bool isLogIn;
@@ -114,93 +115,182 @@ class _AuthScreenState extends State<AuthScreen> {
     return true;
   }
 
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    bool isPassword = false,
+    bool obscureText = false,
+    VoidCallback? onToggleVisibility,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(30),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 3,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: TextField(
+        controller: controller,
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: TextStyle(color: Colors.grey[600]),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30),
+            borderSide: BorderSide.none,
+          ),
+          filled: true,
+          fillColor: Colors.white,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 25),
+          suffixIcon: isPassword
+              ? IconButton(
+                  icon: Icon(
+                    obscureText ? Icons.visibility_off : Icons.visibility,
+                    color: Colors.grey[600],
+                  ),
+                  onPressed: onToggleVisibility,
+                )
+              : null,
+        ),
+        obscureText: isPassword ? obscureText : false,
+        keyboardType: isPassword ? TextInputType.text : TextInputType.emailAddress,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: _isLoading 
-        ? const Center(child: CircularProgressIndicator())
-        : SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  _isLogIn ? "Entre na sua conta" : "Crie uma nova conta",
-                  style: Theme.of(context).textTheme.headlineLarge,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+    return BackgroundContainer(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          iconTheme: const IconThemeData(color: Colors.black),
+        ),
+        body: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : SingleChildScrollView(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const Text("Ou "),
-                    TextButton(
-                      onPressed: _toggleAuthAction,
-                      child: Text(_isLogIn ? "crie uma nova conta" : "entre na sua conta"),
+                    const SizedBox(height: 20),
+                    Text(
+                      _isLogIn ? "Entrar" : "Crie sua conta",
+                      style: const TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          _isLogIn ? "Não possui uma conta? " : "Já possui uma conta? ",
+                          style: TextStyle(color: Colors.grey[600]),
+                        ),
+                        TextButton(
+                          onPressed: _toggleAuthAction,
+                          child: Text(
+                            _isLogIn ? "Criar conta" : "Fazer login",
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 32),
+                    _buildTextField(
+                      controller: _emailController,
+                      label: "Insira seu email",
+                    ),
+                    _buildTextField(
+                      controller: _passwordController,
+                      label: "Insira sua senha",
+                      isPassword: true,
+                      obscureText: _obscurePassText,
+                      onToggleVisibility: _togglePassVisibility,
+                    ),
+                    if (!_isLogIn)
+                      _buildTextField(
+                        controller: _confirmPasswordController,
+                        label: "Confirmar senha",
+                        isPassword: true,
+                        obscureText: _obscureConfirmedPassText,
+                        onToggleVisibility: _toggleConfirmedPassVisibility,
+                      ),
+                    if (_isLogIn)
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                          onPressed: _forgotPassword,
+                          child: Text(
+                            "Esqueceu sua senha?",
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ),
+                    if (errorMsg != null)
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        margin: const EdgeInsets.only(bottom: 16),
+                        decoration: BoxDecoration(
+                          color: Colors.red[50],
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.error_outline, color: Colors.red[300]),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                errorMsg!,
+                                style: TextStyle(color: Colors.red[300]),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    const SizedBox(height: 24),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () => _confirm(context),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.black,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 25),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                        ),
+                        child: Text(
+                          _isLogIn ? "Entrar" : "Criar conta",
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: _emailController,
-                  decoration: const InputDecoration(
-                    labelText: "Email",
-                    border: OutlineInputBorder(),
-                  ),
-                  keyboardType: TextInputType.emailAddress,
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: _passwordController,
-                  decoration: InputDecoration(
-                    labelText: "Senha",
-                    border: const OutlineInputBorder(),
-                    suffixIcon: IconButton(
-                      icon: Icon(_obscurePassText ? Icons.visibility_off : Icons.visibility),
-                      onPressed: _togglePassVisibility,
-                    ),
-                  ),
-                  obscureText: _obscurePassText,
-                ),
-                if (!_isLogIn) ...[
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: _confirmPasswordController,
-                    decoration: InputDecoration(
-                      labelText: "Confirmar Senha",
-                      border: const OutlineInputBorder(),
-                      suffixIcon: IconButton(
-                        icon: Icon(_obscureConfirmedPassText ? Icons.visibility_off : Icons.visibility),
-                        onPressed: _toggleConfirmedPassVisibility,
-                      ),
-                    ),
-                    obscureText: _obscureConfirmedPassText,
-                  ),
-                ],
-                if (_isLogIn)
-                  TextButton(
-                    onPressed: _forgotPassword,
-                    child: const Text("Esqueceu sua senha?"),
-                  ),
-                if (errorMsg != null)
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      errorMsg!,
-                      style: TextStyle(color: Theme.of(context).colorScheme.error),
-                    ),
-                  ),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () => _confirm(context),
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 50),
-                  ),
-                  child: Text(_isLogIn ? "Entrar" : "Criar"),
-                ),
-              ],
-            ),
-          ),
+              ),
+      ),
     );
   }
 }

@@ -8,6 +8,7 @@ import '../models/user_settings.dart';
 import '../models/taco_meal.dart';
 import '../widgets/profile_screen_widgets/user_goals_widget.dart';
 import '../widgets/profile_screen_widgets/profile_card_widget.dart';
+import '../widgets/profile_screen_widgets/personal_data_widget.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -36,8 +37,10 @@ class ProfileScreen extends StatelessWidget {
   }
 
   void _showSyncDialog(BuildContext context, bool isSaving) {
-    showDialog(
+    showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
       builder: (context) => SyncDialog(isSaving),
     );
   }
@@ -55,16 +58,16 @@ class ProfileScreen extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Consumer<UserSettingsProvider>(
                 builder: (context, userSettingsProvider, child) {
                   return FutureBuilder<UserSettings?>(
                     future: userSettingsProvider.object,
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return CircularProgressIndicator();
+                        return const CircularProgressIndicator();
                       } else if (snapshot.hasError) {
-                        return Text('Erro ao carregar dados do usuário');
+                        return const Text('Erro ao carregar dados do usuário');
                       } else if (snapshot.hasData) {
                         List<TacoMeal> mealList = mealProvider.meals.where((meal) =>
                           meal.date.year == DateTime.now().year &&
@@ -88,12 +91,14 @@ class ProfileScreen extends StatelessWidget {
                                 await authProvider.signOut();
                               },
                             ),
-                            SizedBox(height: 20),
+                            const SizedBox(height: 30),
                             UserGoalsWidget(settings: snapshot.data!),
+                            const SizedBox(height: 30),
+                            PersonalDataWidget(settings: snapshot.data!),
                           ],
                         );
                       } else {
-                        return Text('Nenhum dado de usuário encontrado');
+                        return const Text('Nenhum dado de usuário encontrado');
                       }
                     },
                   );

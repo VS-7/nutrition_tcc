@@ -23,23 +23,7 @@ class UserJsonDataProvider with ChangeNotifier {
   Future<void> writeData(UserSettings settings) async {
     try {
       final file = await _getFilePath();
-      final Map<String, dynamic> settingsMap = {
-        'calorieGoal': settings.calorieGoal,
-        'carbGoal': settings.carbGoal,
-        'proteinGoal': settings.proteinGoal,
-        'fatGoal': settings.fatGoal,
-        'onboardingCompleted': settings.onboardingCompleted,
-        'age': settings.age,
-        'weight': settings.weight,
-        'height': settings.height,
-        'gender': settings.gender,
-        'activityLevel': settings.activityLevel,
-        'goal': settings.goal,
-        'breakfastCalorieGoal': settings.breakfastCalorieGoal,
-        'lunchCalorieGoal': settings.lunchCalorieGoal,
-        'dinnerCalorieGoal': settings.dinnerCalorieGoal,
-        'snackCalorieGoal': settings.snackCalorieGoal,
-      };
+      final Map<String, dynamic> settingsMap = settings.toMap();
       
       String jsonString = json.encode(settingsMap);
       await file.writeAsString(jsonString);
@@ -57,26 +41,28 @@ class UserJsonDataProvider with ChangeNotifier {
         final Map<String, dynamic> dataMap = json.decode(jsonString);
         
         return UserSettings(
-          calorieGoal: dataMap['calorieGoal'] ?? 2000.0,
-          carbGoal: dataMap['carbGoal'] ?? 250.0,
-          proteinGoal: dataMap['proteinGoal'] ?? 150.0,
-          fatGoal: dataMap['fatGoal'] ?? 67.0,
+          name: dataMap['name'] ?? '',
+          calorieGoal: (dataMap['calorieGoal'] ?? 2000.0).toDouble(),
+          carbGoal: (dataMap['carbGoal'] ?? 250.0).toDouble(),
+          proteinGoal: (dataMap['proteinGoal'] ?? 150.0).toDouble(),
+          fatGoal: (dataMap['fatGoal'] ?? 67.0).toDouble(),
           onboardingCompleted: dataMap['onboardingCompleted'] ?? false,
           age: dataMap['age'] ?? 0,
-          weight: dataMap['weight'] ?? 0.0,
-          height: dataMap['height'] ?? 0.0,
+          weight: (dataMap['weight'] ?? 0.0).toDouble(),
+          height: (dataMap['height'] ?? 0.0).toDouble(),
           gender: dataMap['gender'] ?? '',
           activityLevel: dataMap['activityLevel'] ?? '',
           goal: dataMap['goal'] ?? '',
-          breakfastCalorieGoal: dataMap['breakfastCalorieGoal'] ?? 500.0,
-          lunchCalorieGoal: dataMap['lunchCalorieGoal'] ?? 700.0,
-          dinnerCalorieGoal: dataMap['dinnerCalorieGoal'] ?? 600.0,
-          snackCalorieGoal: dataMap['snackCalorieGoal'] ?? 200.0,
+          breakfastCalorieGoal: (dataMap['breakfastCalorieGoal'] ?? 500.0).toDouble(),
+          lunchCalorieGoal: (dataMap['lunchCalorieGoal'] ?? 700.0).toDouble(),
+          dinnerCalorieGoal: (dataMap['dinnerCalorieGoal'] ?? 600.0).toDouble(),
+          snackCalorieGoal: (dataMap['snackCalorieGoal'] ?? 200.0).toDouble(),
         );
       }
       
       // Criar configurações padrão se o arquivo não existir
       final defaultSettings = UserSettings(
+        name: 'Usuário',
         calorieGoal: 2000.0,
         carbGoal: 250.0,
         proteinGoal: 150.0,
@@ -91,6 +77,34 @@ class UserJsonDataProvider with ChangeNotifier {
     } catch (e) {
       debugPrint("Erro no método 'readData' na classe 'UserJsonDataProvider': $e");
       return null;
+    }
+  }
+
+  Future<void> updateFromCloud(Map<String, dynamic> cloudData) async {
+    try {
+      final UserSettings settings = UserSettings(
+        name: cloudData['name'] ?? '',
+        calorieGoal: (cloudData['calorieGoal'] ?? 2000.0).toDouble(),
+        carbGoal: (cloudData['carbGoal'] ?? 250.0).toDouble(),
+        proteinGoal: (cloudData['proteinGoal'] ?? 150.0).toDouble(),
+        fatGoal: (cloudData['fatGoal'] ?? 67.0).toDouble(),
+        onboardingCompleted: cloudData['onboardingCompleted'] ?? false,
+        age: cloudData['age'] ?? 0,
+        weight: (cloudData['weight'] ?? 0.0).toDouble(),
+        height: (cloudData['height'] ?? 0.0).toDouble(),
+        gender: cloudData['gender'] ?? '',
+        activityLevel: cloudData['activityLevel'] ?? '',
+        goal: cloudData['goal'] ?? '',
+        breakfastCalorieGoal: (cloudData['breakfastCalorieGoal'] ?? 500.0).toDouble(),
+        lunchCalorieGoal: (cloudData['lunchCalorieGoal'] ?? 700.0).toDouble(),
+        dinnerCalorieGoal: (cloudData['dinnerCalorieGoal'] ?? 600.0).toDouble(),
+        snackCalorieGoal: (cloudData['snackCalorieGoal'] ?? 200.0).toDouble(),
+      );
+      
+      await writeData(settings);
+    } catch (e) {
+      debugPrint("Erro no método 'updateFromCloud' na classe 'UserJsonDataProvider': $e");
+      throw Exception('Falha ao atualizar dados da nuvem');
     }
   }
 

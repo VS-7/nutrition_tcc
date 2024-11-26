@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../providers/services/firebase_auth_provider.dart';
 import '../providers/services/sync_provider.dart';
 import '../providers/services/user_json_data_provider.dart';
+import '../providers/user_settings_provider.dart';
 import '../models/user_settings.dart';
 
 class SyncDialog extends StatefulWidget {
@@ -20,164 +21,226 @@ class _SyncDialogState extends State<SyncDialog> {
   bool _isLoading = false;
   String? errorMsg;
 
-  void _cancel(BuildContext context) {
-    Navigator.of(context).pop();
-  }
-
   String _formatDate(DateTime date) {
     return DateFormat('dd/MM/yyyy HH:mm').format(date);
   }
 
-  void _chooseLocal(BuildContext context) async {
-    setState(() {
-      _isLoading = true;
-    });
+  Future<void> _handleSync(BuildContext context, bool isUpload) async {
+    setState(() => _isLoading = true);
     
-    final String? userFirebaseId = context.read<FirebaseAuthProvider>().uid;
+    final String? userFirebaseId = Provider.of<FirebaseAuthProvider>(context, listen: false).uid;
     if (userFirebaseId == null) return;
 
-    final String? anyError = await context.read<SyncProvider>().upload(userFirebaseId);
+    final userSettings = await Provider.of<UserSettingsProvider>(context, listen: false).object;
+    if (userSettings == null) return;
+
+    final String? anyError = isUpload 
+        ? await Provider.of<SyncProvider>(context, listen: false).upload(userFirebaseId, userSettings)
+        : await Provider.of<SyncProvider>(context, listen: false).download(userFirebaseId, context);
     
     setState(() {
       _isLoading = false;
+      errorMsg = anyError;
     });
 
-    if (anyError != null) {
-      setState(() {
-        errorMsg = anyError;
-      });
-      return;
+    if (anyError == null && mounted) {
+      Navigator.of(context).pop();
     }
-    Navigator.of(context).pop();
   }
 
-  void _chooseRemote(BuildContext context) async {
-    setState(() {
-      _isLoading = true;
-    });
-    
-    final String? userFirebaseId = context.read<FirebaseAuthProvider>().uid;
-    if (userFirebaseId == null) return;
+  Widget _buildDragHandle() {
+    return Container(
+      width: 40,
+      height: 5,
+      margin: const EdgeInsets.symmetric(vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.grey[600],
+        borderRadius: BorderRadius.circular(2.5),
+      ),
+    );
+  }
 
-    final String? anyError = await context.read<SyncProvider>().download(userFirebaseId);
-    
-    setState(() {
-      _isLoading = false;
-    });
-
-    if (anyError != null) {
-      setState(() {
-        errorMsg = anyError;
-      });
-      return;
-    }
-    Navigator.of(context).pop();
+  Widget _buildDataContainer(String title, List<Widget> children) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.grey[900],
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 12),
+          ...children,
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text(
-        widget.isSaving
-            ? "Deseja fazer backup dos seus dados?"
-            : "Deseja carregar seus dados do backup?",
+    return Container(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
       ),
-      content: FutureBuilder<Map<String, dynamic>>(
-        future: Future.wait([
-          context.read<UserJsonDataProvider>().readData(),
-          context.read<SyncProvider>().getLastSync(
-            context.read<FirebaseAuthProvider>().uid ?? '',
-          ),
-        ]).then((results) {
-          final localSettings = results[0] as UserSettings?;
-          final lastSync = results[1] as DateTime?;
-          return {
-            'localSettings': localSettings,
-            'lastSync': lastSync,
-          };
-        }),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          
-          if (snapshot.hasError) {
-            return Text("Erro: ${snapshot.error}");
-          }
-          
-          if (!snapshot.hasData) {
-            return const Text("Sem dados disponíveis");
-          }
-
-          final localSettings = snapshot.data!['localSettings'] as UserSettings?;
-          final lastSync = snapshot.data!['lastSync'] as DateTime?;
-
-          return _isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (lastSync == null)
-                      const Text("Não possui nenhum backup salvo.")
-                    else
-                      Text(
-                        widget.isSaving
-                            ? "Tem certeza? Os dados do seu último backup serão substituídos. Essa ação não pode ser desfeita."
-                            : "Tem certeza? Os dados do seu dispositivo serão substituídos pelo backup. Essa ação não pode ser desfeita.",
-                        style: TextStyle(color: Colors.red),
-                      ),
-                    const SizedBox(height: 16),
-                    Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      padding: const EdgeInsets.all(8),
-                      child: Column(
-                        children: [
-                          Text("Dados Locais"),
-                          Text("Meta Calórica: ${localSettings?.calorieGoal ?? 0} kcal"),
-                          Text("Carboidratos: ${localSettings?.carbGoal ?? 0}g"),
-                          Text("Proteínas: ${localSettings?.proteinGoal ?? 0}g"),
-                          Text("Gorduras: ${localSettings?.fatGoal ?? 0}g"),
-                          if (lastSync != null) ...[
-                            const SizedBox(height: 8),
-                            Text("Último backup em:"),
-                            Text(_formatDate(lastSync)),
-                          ],
-                        ],
-                      ),
-                    ),
-                    if (errorMsg != null)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8),
-                        child: Text(
-                          errorMsg!,
-                          style: const TextStyle(color: Colors.red),
-                        ),
-                      ),
-                  ],
-                );
-        },
+      decoration: const BoxDecoration(
+        color: Colors.black,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(80)),
       ),
-      actions: (!_isLoading)
-          ? [
-              TextButton(
-                onPressed: () => _cancel(context),
-                child: const Text("Cancelar"),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildDragHandle(),
+              const SizedBox(height: 12),
+              Text(
+                widget.isSaving ? 'Backup de Dados' : 'Restaurar Dados',
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w300,
+                  color: Colors.white,
+                ),
+                textAlign: TextAlign.center,
               ),
-              TextButton(
-                onPressed: () {
-                  if (widget.isSaving) {
-                    _chooseLocal(context);
-                  } else {
-                    _chooseRemote(context);
+              const SizedBox(height: 24),
+              FutureBuilder<Map<String, dynamic>>(
+                future: Future.wait<dynamic>([
+                  Provider.of<UserJsonDataProvider>(context, listen: false).readData(),
+                  Provider.of<SyncProvider>(context, listen: false).getLastSync(
+                    Provider.of<FirebaseAuthProvider>(context, listen: false).uid ?? '',
+                  ),
+                ]).then((results) => {
+                  'localSettings': results[0] as UserSettings?,
+                  'lastSync': results[1] as DateTime?,
+                }),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(20.0),
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
                   }
+                  
+                  if (snapshot.hasError) {
+                    return Text(
+                      "Erro: ${snapshot.error}",
+                      style: const TextStyle(color: Colors.red),
+                    );
+                  }
+                  
+                  if (!snapshot.hasData) {
+                    return const Text(
+                      "Sem dados disponíveis",
+                      style: TextStyle(color: Colors.white),
+                    );
+                  }
+
+                  final localSettings = snapshot.data!['localSettings'] as UserSettings?;
+                  final lastSync = snapshot.data!['lastSync'] as DateTime?;
+
+                  return _isLoading
+                      ? const Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(20.0),
+                            child: CircularProgressIndicator(),
+                          ),
+                        )
+                      : Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _buildDataContainer(
+                              'Dados Locais',
+                              [
+                                Text(
+                                  'Meta Calórica: ${localSettings?.calorieGoal ?? 0} kcal',
+                                  style: TextStyle(color: Colors.grey[400]),
+                                ),
+                                Text(
+                                  'Carboidratos: ${localSettings?.carbGoal ?? 0}g',
+                                  style: TextStyle(color: Colors.grey[400]),
+                                ),
+                                Text(
+                                  'Proteínas: ${localSettings?.proteinGoal ?? 0}g',
+                                  style: TextStyle(color: Colors.grey[400]),
+                                ),
+                                Text(
+                                  'Gorduras: ${localSettings?.fatGoal ?? 0}g',
+                                  style: TextStyle(color: Colors.grey[400]),
+                                ),
+                                if (lastSync != null) ...[
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    'Último backup: ${_formatDate(lastSync)}',
+                                    style: TextStyle(color: Colors.grey[400]),
+                                  ),
+                                ],
+                              ],
+                            ),
+                            if (errorMsg != null) ...[
+                              const SizedBox(height: 16),
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Colors.red.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(
+                                  errorMsg!,
+                                  style: const TextStyle(color: Colors.red),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ],
+                            const SizedBox(height: 24),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: TextButton(
+                                    onPressed: () => Navigator.of(context).pop(),
+                                    style: TextButton.styleFrom(
+                                      foregroundColor: Colors.grey,
+                                      padding: const EdgeInsets.symmetric(vertical: 16),
+                                    ),
+                                    child: const Text('Cancelar'),
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: ElevatedButton(
+                                    onPressed: () => _handleSync(context, widget.isSaving),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.grey[900],
+                                      foregroundColor: Colors.white,
+                                      padding: const EdgeInsets.symmetric(vertical: 16),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(15),
+                                      ),
+                                    ),
+                                    child: Text(widget.isSaving ? 'Fazer Backup' : 'Restaurar'),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        );
                 },
-                child: Text(widget.isSaving ? "Fazer Backup" : "Carregar Backup"),
               ),
-            ]
-          : [],
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
