@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "485455231816",
+    "project_id": "nutrition-tcc",
+    "storage_bucket": "nutrition-tcc.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:485455231816:android:408c81d08f2b1a4adfd17d",
+        "android_client_info": {
+          "package_name": "com.example.macro_counter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyChs0DZ5sNuASxSi27DjJDEVCdpgQX4oTw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

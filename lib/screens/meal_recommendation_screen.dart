@@ -223,7 +223,7 @@ class _MealRecommendationScreenState extends State<MealRecommendationScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text(
-                          'Sua Recomendação Alimentar',
+                          'Sua Recomendação',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,

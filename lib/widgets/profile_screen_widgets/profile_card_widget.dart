@@ -4,17 +4,27 @@ import '../../models/user_settings.dart';
 class ProfileCardWidget extends StatelessWidget {
   final UserSettings settings;
   final double caloriesConsumed;
+  final bool isLoggedIn;
+  final VoidCallback onLoginTap;
+  final VoidCallback onBackupTap;
+  final VoidCallback onRestoreTap;
+  final VoidCallback onLogoutTap;
 
   const ProfileCardWidget({
     Key? key,
     required this.settings,
     required this.caloriesConsumed,
+    required this.isLoggedIn,
+    required this.onLoginTap,
+    required this.onBackupTap,
+    required this.onRestoreTap,
+    required this.onLogoutTap,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     double progress = caloriesConsumed / settings.calorieGoal;
-    progress = progress.clamp(0.0, 1.0); // Garante que o progresso está entre 0 e 1
+    progress = progress.clamp(0.0, 1.0);
 
     return Container(
       padding: EdgeInsets.all(20),
@@ -59,13 +69,40 @@ class ProfileCardWidget extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Usuário',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Usuário',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                        if (!isLoggedIn)
+                          TextButton(
+                            onPressed: onLoginTap,
+                            child: Text('Entrar'),
+                          )
+                        else
+                          PopupMenuButton(
+                            itemBuilder: (context) => [
+                              PopupMenuItem(
+                                child: Text('Fazer Backup'),
+                                onTap: onBackupTap,
+                              ),
+                              PopupMenuItem(
+                                child: Text('Restaurar Backup'),
+                                onTap: onRestoreTap,
+                              ),
+                              PopupMenuItem(
+                                child: Text('Sair'),
+                                onTap: onLogoutTap,
+                              ),
+                            ],
+                          ),
+                      ],
                     ),
                     SizedBox(height: 8),
                     Row(

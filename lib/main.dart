@@ -17,15 +17,24 @@ import 'package:macro_counter/providers/meal_provider.dart';
 import 'package:macro_counter/providers/user_settings_provider.dart';
 import 'package:macro_counter/providers/taco_meal_provider.dart';
 import 'package:macro_counter/data/taco_meal_dao.dart';
+import 'package:macro_counter/screens/auth_screen.dart';
 import 'package:macro_counter/screens/scaffold_screen.dart';
 import 'package:macro_counter/screens/onboarding_screen.dart';
 import 'package:macro_counter/screens/welcome_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 import 'theme/app_theme.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+import 'package:macro_counter/providers/services/firebase_auth_provider.dart';
+import 'package:macro_counter/providers/services/sync_provider.dart';
+import 'package:macro_counter/providers/services/user_json_data_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
@@ -49,6 +58,7 @@ class MyApp extends StatelessWidget {
     IoDao<UserSettings> userSettingsDao = UserSettingsDao();
 
     FoodProvider foodProvider = FoodProvider(foodDao);
+    
     MealProvider mealProvider = MealProvider(mealDao);
     UserSettingsProvider userSettingsProvider =
         UserSettingsProvider(userSettingsDao);
@@ -58,6 +68,15 @@ class MyApp extends StatelessWidget {
 
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider(
+          create: (_) => FirebaseAuthProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => SyncProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => UserJsonDataProvider(),
+        ),
         ChangeNotifierProvider(create: (ctx) => foodProvider),
         ChangeNotifierProvider(create: (ctx) => mealProvider),
         ChangeNotifierProvider(create: (ctx) => userSettingsProvider),
@@ -67,11 +86,14 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Nutrition TCC',
         theme: AppTheme.themeData,
+        routes: {
+          '/auth': (context) => AuthScreen(),
+        },
         home: FutureBuilder<UserSettings?>(
           future: userSettingsProvider.object,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return CircularProgressIndicator();
+              return const CircularProgressIndicator();
             } else if (snapshot.hasData && snapshot.data!.onboardingCompleted) {
               return ScaffoldScreen();
             } else {

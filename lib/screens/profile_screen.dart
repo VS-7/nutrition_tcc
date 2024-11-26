@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../widgets/background_container.dart';
+import '../providers/services/firebase_auth_provider.dart';
 import '../providers/user_settings_provider.dart';
 import '../providers/taco_meal_provider.dart';
+import '../dialogs/sync_bottom_sheet.dart';
 import '../models/user_settings.dart';
 import '../models/taco_meal.dart';
 import '../widgets/profile_screen_widgets/user_goals_widget.dart';
@@ -30,10 +31,22 @@ class ProfileScreen extends StatelessWidget {
     };
   }
 
+  void _showLoginDialog(BuildContext context) {
+    Navigator.pushNamed(context, '/auth');
+  }
+
+  void _showSyncDialog(BuildContext context, bool isSaving) {
+    showDialog(
+      context: context,
+      builder: (context) => SyncDialog(isSaving),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final mealProvider = Provider.of<TacoMealProvider>(context);
     final settingsProvider = Provider.of<UserSettingsProvider>(context);
+    final authProvider = Provider.of<FirebaseAuthProvider>(context);
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -67,6 +80,13 @@ class ProfileScreen extends StatelessWidget {
                             ProfileCardWidget(
                               settings: snapshot.data!,
                               caloriesConsumed: consumedCalories,
+                              isLoggedIn: authProvider.user != null,
+                              onLoginTap: () => _showLoginDialog(context),
+                              onBackupTap: () => _showSyncDialog(context, true),
+                              onRestoreTap: () => _showSyncDialog(context, false),
+                              onLogoutTap: () async {
+                                await authProvider.signOut();
+                              },
                             ),
                             SizedBox(height: 20),
                             UserGoalsWidget(settings: snapshot.data!),
