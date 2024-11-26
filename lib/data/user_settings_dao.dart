@@ -23,6 +23,7 @@ class UserSettingsDao implements IoDao<UserSettings> {
       lunchCalorieGoal: prefs.getDouble('lunchCalorieGoal') ?? 0,
       dinnerCalorieGoal: prefs.getDouble('dinnerCalorieGoal') ?? 0,
       snackCalorieGoal: prefs.getDouble('snackCalorieGoal') ?? 0,
+      waterGoal: prefs.getDouble('waterGoal') ?? 2.0,
     );
   }
 
@@ -45,6 +46,7 @@ class UserSettingsDao implements IoDao<UserSettings> {
     await prefs.setDouble('lunchCalorieGoal', settings.lunchCalorieGoal);
     await prefs.setDouble('dinnerCalorieGoal', settings.dinnerCalorieGoal);
     await prefs.setDouble('snackCalorieGoal', settings.snackCalorieGoal);
+    await prefs.setDouble('waterGoal', settings.waterGoal);
     return 1; // Retorna 1 para indicar sucesso
   }
 

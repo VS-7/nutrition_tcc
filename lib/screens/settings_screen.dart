@@ -18,6 +18,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   final TextEditingController carbController = TextEditingController();
   final TextEditingController proteinController = TextEditingController();
   final TextEditingController fatController = TextEditingController();
+  final TextEditingController waterController = TextEditingController();
 
   @override
   void initState() {
@@ -36,6 +37,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         carbController.text = currentSettings.carbGoal.toString();
         proteinController.text = currentSettings.proteinGoal.toString();
         fatController.text = currentSettings.fatGoal.toString();
+        waterController.text = currentSettings.waterGoal.toString();
       });
     }
   }
@@ -135,6 +137,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     icon: Icons.opacity_outlined,
                     suffix: 'g',
                   ),
+                  _buildTextField(
+                    label: 'Meta de Água',
+                    controller: waterController,
+                    icon: Icons.water_drop_outlined,
+                    suffix: 'L',
+                  ),
                   const SizedBox(height: 24),
                   Container(
                     width: double.infinity,
@@ -150,6 +158,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             carbGoal: double.parse(carbController.text),
                             proteinGoal: double.parse(proteinController.text),
                             fatGoal: double.parse(fatController.text),
+                            waterGoal: double.parse(waterController.text),
                             onboardingCompleted: true,
                             age: currentSettings?.age ?? 0,
                             weight: currentSettings?.weight ?? 0,
@@ -202,6 +211,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     carbController.dispose();
     proteinController.dispose();
     fatController.dispose();
+    waterController.dispose();
     super.dispose();
   }
 }

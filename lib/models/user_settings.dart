@@ -15,6 +15,7 @@ class UserSettings {
   final double lunchCalorieGoal;
   final double dinnerCalorieGoal;
   final double snackCalorieGoal;
+  final double waterGoal;
 
   UserSettings({
     this.name = '',
@@ -33,6 +34,7 @@ class UserSettings {
     required this.lunchCalorieGoal,
     required this.dinnerCalorieGoal,
     required this.snackCalorieGoal,
+    this.waterGoal = 2.0,
   });
 
   Map<String, dynamic> toMap() {
@@ -53,6 +55,7 @@ class UserSettings {
       'lunchCalorieGoal': lunchCalorieGoal,
       'dinnerCalorieGoal': dinnerCalorieGoal,
       'snackCalorieGoal': snackCalorieGoal,
+      'waterGoal': waterGoal,
     };
   }
 }

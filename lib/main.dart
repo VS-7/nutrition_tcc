@@ -2,18 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:macro_counter/data/dao.dart';
 import 'package:macro_counter/data/database_helper.dart';
-import 'package:macro_counter/data/food_dao.dart';
 import 'package:macro_counter/data/io_dao.dart';
-import 'package:macro_counter/data/meal_dao.dart';
 import 'package:macro_counter/data/shared_preferences_helper.dart';
 import 'package:macro_counter/data/sqflite_database_helper.dart';
 import 'package:macro_counter/data/user_settings_dao.dart';
-import 'package:macro_counter/models/food.dart';
-import 'package:macro_counter/models/meal.dart';
 import 'package:macro_counter/models/user_settings.dart';
-import 'package:macro_counter/providers/food_provider.dart';
 import 'package:macro_counter/providers/id_provider_dt.dart';
-import 'package:macro_counter/providers/meal_provider.dart';
 import 'package:macro_counter/providers/user_settings_provider.dart';
 import 'package:macro_counter/providers/taco_meal_provider.dart';
 import 'package:macro_counter/data/taco_meal_dao.dart';
@@ -29,6 +23,9 @@ import 'firebase_options.dart';
 import 'package:macro_counter/providers/services/firebase_auth_provider.dart';
 import 'package:macro_counter/providers/services/sync_provider.dart';
 import 'package:macro_counter/providers/services/user_json_data_provider.dart';
+import 'package:macro_counter/providers/water_consumption_provider.dart';
+import 'package:macro_counter/providers/note_provider.dart';
+import 'package:macro_counter/providers/widget_order_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -50,16 +47,8 @@ class MyApp extends StatelessWidget {
     DatabaseHelper sqfliteHelper = SqfliteDatabaseHelper.instance;
     DatabaseHelper sharedPreferencesHelper = SharedPreferencesHelper.instance;
 
-    String foodTableName = "food";
-    String mealTableName = "meal";
-
-    Dao<Food> foodDao = FoodDao(sqfliteHelper, foodTableName);
-    Dao<Meal> mealDao = MealDao(sqfliteHelper, mealTableName);
     IoDao<UserSettings> userSettingsDao = UserSettingsDao();
 
-    FoodProvider foodProvider = FoodProvider(foodDao);
-    
-    MealProvider mealProvider = MealProvider(mealDao);
     UserSettingsProvider userSettingsProvider =
         UserSettingsProvider(userSettingsDao);
     IdProviderDt idProvider = IdProviderDt();
@@ -77,8 +66,13 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => UserJsonDataProvider(),
         ),
-        ChangeNotifierProvider(create: (ctx) => foodProvider),
-        ChangeNotifierProvider(create: (ctx) => mealProvider),
+        ChangeNotifierProvider(
+          create: (_) => NoteProvider(SqfliteDatabaseHelper.instance),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => WaterConsumptionProvider(SqfliteDatabaseHelper.instance),
+        ),
+        ChangeNotifierProvider(create: (_) => WidgetOrderProvider()),
         ChangeNotifierProvider(create: (ctx) => userSettingsProvider),
         ChangeNotifierProvider(create: (ctx) => idProvider),
         ChangeNotifierProvider(create: (ctx) => tacoMealProvider),

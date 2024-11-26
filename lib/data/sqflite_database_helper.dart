@@ -41,43 +41,21 @@ class SqfliteDatabaseHelper implements DatabaseHelper {
   }
 
   Future<void> _onCreate(Database db, int version) async {
-    await db.execute(
-      "CREATE TABLE IF NOT EXISTS food ( id INTEGER PRIMARY KEY, name TEXT NOT NULL, calories REAL, carbs REAL, proteins REAL, fats REAL, isDeleted BOOLEAN DEFAULT FALSE );"
-    );
-    await db.execute(
-      "CREATE TABLE IF NOT EXISTS meal ( id INTEGER PRIMARY KEY, datetime DATETIME NOT NULL, quantity REAL NOT NULL, foodId INTEGER NOT NULL);"
-    );
     await db.execute("""
       CREATE TABLE IF NOT EXISTS taco_meal (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        food_name TEXT NOT NULL,
-        energia REAL,
-        proteina REAL,
-        lipideos REAL,
-        colesterol REAL,
-        carboidrato REAL,
-        fibra REAL,
-        calcio REAL,
-        magnesio REAL,
-        manganes REAL,
-        fosforo REAL,
-        ferro REAL,
-        sodio REAL,
-        potassio REAL,
-        cobre REAL,
-        zinco REAL,
-        retinol REAL,
-        riboflavina REAL,
-        vitc REAL,
-        vita REAL,
-        vitb1 REAL,
-        vitb2 REAL,
-        vitb3 REAL,
-        vitb6 REAL,
-        categoria TEXT,
-        quantity REAL NOT NULL,
-        meal_type TEXT NOT NULL,
-        date TEXT NOT NULL
+        id INTEGER PRIMARY KEY AUTOINCREMENT, food_name TEXT NOT NULL, energia REAL, proteina REAL, lipideos REAL, colesterol REAL, carboidrato REAL, fibra REAL, calcio REAL, magnesio REAL, manganes REAL, fosforo REAL, ferro REAL, sodio REAL, potassio REAL, cobre REAL, zinco REAL, retinol REAL, riboflavina REAL, vitc REAL, vita REAL, vitb1 REAL, vitb2 REAL, vitb3 REAL, vitb6 REAL, categoria TEXT, quantity REAL NOT NULL, meal_type TEXT NOT NULL, date TEXT NOT NULL
+      );
+    """);
+
+    await db.execute("""
+      CREATE TABLE IF NOT EXISTS water_consumption (
+        id INTEGER PRIMARY KEY AUTOINCREMENT, amount REAL NOT NULL, date TEXT NOT NULL
+      );
+    """);
+
+    await db.execute("""
+      CREATE TABLE IF NOT EXISTS notes (
+        id INTEGER PRIMARY KEY AUTOINCREMENT, content TEXT NOT NULL, mood TEXT NOT NULL, date TEXT NOT NULL
       );
     """);
   }

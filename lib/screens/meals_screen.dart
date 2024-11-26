@@ -9,6 +9,12 @@ import 'package:macro_counter/widgets/meals_screen_widgets/daily_summary_widget.
 import 'package:macro_counter/widgets/meals_screen_widgets/meal_recommendation_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:macro_counter/screens/statistics_screen.dart';
+import 'package:macro_counter/widgets/meals_screen_widgets/water_tracker_widget.dart';
+import 'package:macro_counter/widgets/meals_screen_widgets/notes_widget.dart';
+import 'package:macro_counter/providers/water_consumption_provider.dart';
+import 'package:macro_counter/providers/note_provider.dart';
+import '../providers/widget_order_provider.dart';
+import '../dialogs/widget_order_bottom_sheet.dart';
 
 class MealsScreen extends StatefulWidget {
   const MealsScreen({super.key});
@@ -24,7 +30,10 @@ class _MealsScreenState extends State<MealsScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      final context = this.context;
       Provider.of<TacoMealProvider>(context, listen: false).loadMeals(selectedDate);
+      Provider.of<WaterConsumptionProvider>(context, listen: false).selectedDate = selectedDate;
+      Provider.of<NoteProvider>(context, listen: false).selectedDate = selectedDate;
     });
   }
 
@@ -88,40 +97,83 @@ class _MealsScreenState extends State<MealsScreen> {
                     icon: Icon(Icons.calendar_month, color: Colors.black),
                     onPressed: _showDatePicker,
                   ),
+                  IconButton(
+                    icon: Icon(Icons.reorder, color: Colors.black),
+                    onPressed: _showWidgetOrderSheet,
+                  ),
                 ],
               ),
               Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      SizedBox(height: 20),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => StatisticsScreen(selectedDate: selectedDate),
-                            ),
-                          );
-                        },
-                        child: DailySummaryWidget(
-                          consumedCalories: consumedCalories,
-                          calorieGoal: calorieGoal,
-                          consumedCarbs: consumedCarbs,
-                          carbGoal: carbGoal,
-                          consumedProteins: consumedProteins,
-                          proteinGoal: proteinGoal,
-                          consumedFats: consumedFats,
-                          fatGoal: fatGoal,
-                        ),
+                child: Consumer<WidgetOrderProvider>(
+                  builder: (context, orderProvider, child) {
+                    return SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 20),
+                          ...orderProvider.widgetOrder.map((widgetId) {
+                            switch (widgetId) {
+                              case 'daily_summary':
+                                return Column(
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => StatisticsScreen(
+                                            selectedDate: selectedDate
+                                          ),
+                                        ),
+                                      ),
+                                      child: DailySummaryWidget(
+                                        consumedCalories: consumedCalories,
+                                        calorieGoal: calorieGoal,
+                                        consumedCarbs: consumedCarbs,
+                                        carbGoal: carbGoal,
+                                        consumedProteins: consumedProteins,
+                                        proteinGoal: proteinGoal,
+                                        consumedFats: consumedFats,
+                                        fatGoal: fatGoal,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 16),
+                                  ],
+                                );
+                              case 'meal_recommendation':
+                                return Column(
+                                  children: [
+                                    MealRecommendationWidget(),
+                                    const SizedBox(height: 16),
+                                  ],
+                                );
+                              case 'meal_planner':
+                                return Column(
+                                  children: [
+                                    MealPlanner(selectedDate: selectedDate),
+                                    const SizedBox(height: 30),
+                                  ],
+                                );
+                              case 'water_tracker':
+                                return Column(
+                                  children: [
+                                    WaterTrackerWidget(selectedDate: selectedDate),
+                                    const SizedBox(height: 30),
+                                  ],
+                                );
+                              case 'notes':
+                                return Column(
+                                  children: [
+                                    NotesWidget(selectedDate: selectedDate),
+                                    const SizedBox(height: 16),
+                                  ],
+                                );
+                              default:
+                                return const SizedBox.shrink();
+                            }
+                          }).toList(),
+                        ],
                       ),
-                      SizedBox(height: 16),
-                      MealRecommendationWidget(),
-                      SizedBox(height: 16),
-                      MealPlanner(selectedDate: selectedDate),
-                      SizedBox(height: 16),
-                    ],
-                  ),
+                    );
+                  },
                 ),
               ),
             ],
@@ -184,7 +236,10 @@ class _MealsScreenState extends State<MealsScreen> {
                       setState(() {
                         selectedDate = value;
                       });
+                      final context = this.context;
                       Provider.of<TacoMealProvider>(context, listen: false).loadMeals(selectedDate);
+                      Provider.of<WaterConsumptionProvider>(context, listen: false).selectedDate = selectedDate;
+                      Provider.of<NoteProvider>(context, listen: false).selectedDate = selectedDate;
                       Navigator.pop(context);
                     },
                   ),
@@ -206,6 +261,15 @@ class _MealsScreenState extends State<MealsScreen> {
         color: Colors.grey[600],
         borderRadius: BorderRadius.circular(2.5),
       ),
+    );
+  }
+
+  void _showWidgetOrderSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => const WidgetOrderBottomSheet(),
     );
   }
 }

@@ -111,6 +111,7 @@ class SyncProvider with ChangeNotifier {
           lunchCalorieGoal: (userData['lunchCalorieGoal'] ?? 700.0).toDouble(),
           dinnerCalorieGoal: (userData['dinnerCalorieGoal'] ?? 600.0).toDouble(),
           snackCalorieGoal: (userData['snackCalorieGoal'] ?? 200.0).toDouble(),
+          waterGoal: (userData['waterGoal'] ?? 2.0).toDouble(),
         );
         await userSettingsProvider.updateObject(newSettings);
       }

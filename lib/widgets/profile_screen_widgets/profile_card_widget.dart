@@ -94,7 +94,7 @@ class ProfileCardWidget extends StatelessWidget {
                       ),
                       const CircleAvatar(
                         radius: 32,
-                        backgroundImage: AssetImage('assets/images/icon.png'),
+                        backgroundImage: AssetImage('assets/images/logo.png'),
                         backgroundColor: Colors.white,
                       ),
                     ],
