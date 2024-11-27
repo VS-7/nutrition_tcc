@@ -43,7 +43,7 @@ class ProfileCardWidget extends StatelessWidget {
     progress = progress.clamp(0.0, 1.0);
 
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(25),
@@ -116,7 +116,7 @@ class ProfileCardWidget extends StatelessWidget {
                                   settings.name.isEmpty ? 'Usuário' : settings.name,
                                   style: const TextStyle(
                                     fontSize: 24,
-                                    fontWeight: FontWeight.bold,
+                                    fontWeight: FontWeight.w600,
                                     color: Colors.black87,
                                   ),
                                   overflow: TextOverflow.ellipsis,
@@ -213,7 +213,7 @@ class ProfileCardWidget extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: Colors.grey[50],
               borderRadius: BorderRadius.circular(15),
@@ -235,9 +235,9 @@ class ProfileCardWidget extends StatelessWidget {
                     Text(
                       '🔥 ${(settings.calorieGoal - caloriesConsumed).toStringAsFixed(0)}',
                       style: const TextStyle(
-                        fontSize: 24,
+                        fontSize: 20,
                         color: Colors.black87,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],
@@ -260,7 +260,7 @@ class ProfileCardWidget extends StatelessWidget {
       child: Text(
         text,
         style: TextStyle(
-          fontSize: 14,
+          fontSize: 12,
           color: Colors.grey[700],
           fontWeight: FontWeight.w500,
         ),

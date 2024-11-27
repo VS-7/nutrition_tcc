@@ -183,9 +183,16 @@ class _AuthScreenState extends State<AuthScreen> {
                   children: [
                     const SizedBox(height: 20),
                     Text(
-                      _isLogIn ? "Entrar" : "Crie sua conta",
+                      _isLogIn ? "🔒" : "🔓",
                       style: const TextStyle(
-                        fontSize: 32,
+                        fontSize: 64,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      _isLogIn ? "Salve seu progresso" : "Crie sua conta",
+                      style: const TextStyle(
+                        fontSize: 24,
                         fontWeight: FontWeight.w500,
                         color: Colors.black,
                       ),

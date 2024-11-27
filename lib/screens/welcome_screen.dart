@@ -59,9 +59,9 @@ class WelcomeScreen extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Container(
-          width: 240,
+          width: 320,
           child: Image.asset(
-            'assets/images/logo.png',
+            'assets/images/logo_inicio.png',
             //fit: BoxFit.fitWidth,
           ),
         ),

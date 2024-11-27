@@ -290,9 +290,27 @@ class _MealRecommendationScreenState extends State<MealRecommendationScreen> {
                 ),
               ),
             ] else ...[
-              const Expanded(
+              Expanded(
                 child: Center(
-                  child: Text('Clique em Otimizar para gerar recomendações'),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        'assets/images/logo_otimization.png',
+                        width: 350,
+                        height: 350,
+                      ),
+                      const SizedBox(height: 24),
+                      const Text(
+                        'Clique em Otimizar\npara gerar recomendações',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.black54,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],

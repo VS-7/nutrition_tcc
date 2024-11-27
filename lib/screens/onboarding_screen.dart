@@ -360,7 +360,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-    Widget _buildFinalStep() {
+  Widget _buildFinalStep() {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
