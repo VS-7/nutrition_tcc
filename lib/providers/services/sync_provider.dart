@@ -9,6 +9,7 @@ import '../../models/user_settings.dart';
 import '../../providers/services/user_json_data_provider.dart';
 import '../../providers/user_settings_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:image_picker/image_picker.dart';
 
 class SyncProvider with ChangeNotifier {
   final SqfliteDatabaseHelper dbHelper = SqfliteDatabaseHelper.instance;
@@ -112,6 +113,7 @@ class SyncProvider with ChangeNotifier {
           dinnerCalorieGoal: (userData['dinnerCalorieGoal'] ?? 600.0).toDouble(),
           snackCalorieGoal: (userData['snackCalorieGoal'] ?? 200.0).toDouble(),
           waterGoal: (userData['waterGoal'] ?? 2.0).toDouble(),
+          profilePictureUrl: userData['profilePictureUrl'] ?? '',
         );
         await userSettingsProvider.updateObject(newSettings);
       }
@@ -142,5 +144,37 @@ class SyncProvider with ChangeNotifier {
       debugPrint("Erro no método 'getLastSync' na classe 'SyncProvider': $error");
     }
     return null;
+  }
+
+  Future<String?> uploadProfilePicture(String userId, XFile imageFile) async {
+    final storage = FirebaseStorage.instance;
+    final db = FirebaseFirestore.instance;
+
+    try {
+      // Delete old profile picture if it exists
+      final userData = await getUserData(userId);
+      if (userData != null && userData['profilePictureUrl'] != null && userData['profilePictureUrl'].isNotEmpty) {
+        try {
+          await storage.refFromURL(userData['profilePictureUrl']).delete();
+        } catch (e) {
+          debugPrint("Error deleting old profile picture: $e");
+        }
+      }
+
+      // Upload new profile picture
+      final storageRef = storage.ref().child('profile_pictures/$userId/${DateTime.now().millisecondsSinceEpoch}.jpg');
+      final uploadTask = await storageRef.putFile(File(imageFile.path));
+      final downloadUrl = await uploadTask.ref.getDownloadURL();
+
+      // Update Firestore with new URL
+      await db.collection("users").doc(userId).update({
+        'profilePictureUrl': downloadUrl,
+      });
+
+      return downloadUrl;
+    } catch (error) {
+      debugPrint("Error uploading profile picture: $error");
+      return null;
+    }
   }
 }

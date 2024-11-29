@@ -306,6 +306,7 @@ class _MealRecommendationScreenState extends State<MealRecommendationScreen> {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 16,
+                          fontWeight: FontWeight.w500,
                           color: Colors.black54,
                         ),
                       ),

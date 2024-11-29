@@ -84,6 +84,13 @@ class ProfileScreen extends StatelessWidget {
                               settings: snapshot.data!,
                               caloriesConsumed: consumedCalories,
                               isLoggedIn: authProvider.user != null,
+                              userId: authProvider.user?.uid,
+                              onProfilePictureUpdated: (String newImageUrl) async {
+                                final updatedSettings = snapshot.data!.copyWith(
+                                  profilePictureUrl: newImageUrl,
+                                );
+                                await userSettingsProvider.updateObject(updatedSettings);
+                              },
                               onLoginTap: () => _showLoginDialog(context),
                               onBackupTap: () => _showSyncDialog(context, true),
                               onRestoreTap: () => _showSyncDialog(context, false),

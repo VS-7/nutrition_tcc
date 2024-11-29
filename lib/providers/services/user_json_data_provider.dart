@@ -58,6 +58,7 @@ class UserJsonDataProvider with ChangeNotifier {
           dinnerCalorieGoal: (dataMap['dinnerCalorieGoal'] ?? 600.0).toDouble(),
           snackCalorieGoal: (dataMap['snackCalorieGoal'] ?? 200.0).toDouble(),
           waterGoal: (dataMap['waterGoal'] ?? 2.0).toDouble(),
+          profilePictureUrl: dataMap['profilePictureUrl'] ?? '',
         );
       }
       
@@ -73,6 +74,7 @@ class UserJsonDataProvider with ChangeNotifier {
         dinnerCalorieGoal: 600.0,
         snackCalorieGoal: 200.0,
         waterGoal: 2.0,
+        profilePictureUrl: '',
       );
       await writeData(defaultSettings);
       return defaultSettings;
@@ -102,6 +104,7 @@ class UserJsonDataProvider with ChangeNotifier {
         dinnerCalorieGoal: (cloudData['dinnerCalorieGoal'] ?? 600.0).toDouble(),
         snackCalorieGoal: (cloudData['snackCalorieGoal'] ?? 200.0).toDouble(),
         waterGoal: (cloudData['waterGoal'] ?? 2.0).toDouble(),
+        profilePictureUrl: cloudData['profilePictureUrl'] ?? '',
       );
       
       await writeData(settings);

@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../models/user_settings.dart';
 import '../../dialogs/edit_name_bottom_sheet.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:provider/provider.dart';
+import '../../providers/services/sync_provider.dart';
 
 enum MenuAction {
   backup,
@@ -16,6 +20,8 @@ class ProfileCardWidget extends StatelessWidget {
   final VoidCallback onBackupTap;
   final VoidCallback onRestoreTap;
   final VoidCallback onLogoutTap;
+  final String? userId;
+  final Function(String imageUrl)? onProfilePictureUpdated;
 
   const ProfileCardWidget({
     Key? key,
@@ -26,6 +32,8 @@ class ProfileCardWidget extends StatelessWidget {
     required this.onBackupTap,
     required this.onRestoreTap,
     required this.onLogoutTap,
+    this.userId,
+    this.onProfilePictureUpdated,
   }) : super(key: key);
 
   void _showEditNameDialog(BuildContext context) {
@@ -35,6 +43,27 @@ class ProfileCardWidget extends StatelessWidget {
       backgroundColor: Colors.transparent,
       builder: (context) => EditNameBottomSheet(settings: settings),
     );
+  }
+
+  Future<void> _pickAndUploadImage(BuildContext context) async {
+    if (userId == null) return;
+
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 512,
+      maxHeight: 512,
+      imageQuality: 75,
+    );
+
+    if (image != null && context.mounted) {
+      final syncProvider = Provider.of<SyncProvider>(context, listen: false);
+      final String? imageUrl = await syncProvider.uploadProfilePicture(userId!, image);
+      
+      if (imageUrl != null && onProfilePictureUpdated != null) {
+        onProfilePictureUpdated!(imageUrl);
+      }
+    }
   }
 
   @override
@@ -92,10 +121,33 @@ class ProfileCardWidget extends StatelessWidget {
                           valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFA7E100)),
                         ),
                       ),
-                      const CircleAvatar(
+                      CircleAvatar(
                         radius: 32,
-                        backgroundImage: AssetImage('assets/images/logo.png'),
                         backgroundColor: Colors.white,
+                        backgroundImage: settings.profilePictureUrl.isNotEmpty
+                            ? CachedNetworkImageProvider(settings.profilePictureUrl)
+                            : const AssetImage('assets/images/logo.png') as ImageProvider,
+                        child: isLoggedIn
+                            ? Align(
+                                alignment: Alignment.bottomRight,
+                                child: GestureDetector(
+                                  onTap: () => _pickAndUploadImage(context),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(4),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFA7E100),
+                                      shape: BoxShape.circle,
+                                      border: Border.all(color: Colors.white, width: 0),
+                                    ),
+                                    child: const Icon(
+                                      Icons.camera_alt,
+                                      size: 12,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : null,
                       ),
                     ],
                   ),
