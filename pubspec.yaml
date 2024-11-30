@@ -88,6 +88,7 @@ flutter:
     - assets/images/logo.png
     - assets/images/logo_otimization.png
     - assets/images/logo_inicio.png
+    - assets/images/back.png
     # Banco de dados com a tabela de alimentos TACO
     - assets/databases/taco.db
 

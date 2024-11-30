@@ -67,7 +67,7 @@ class _NotesWidgetState extends State<NotesWidget> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    "Notas",
+                    "Nota do dia",
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,

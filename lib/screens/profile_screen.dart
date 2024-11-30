@@ -58,7 +58,6 @@ class ProfileScreen extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              const SizedBox(height: 20),
               Consumer<UserSettingsProvider>(
                 builder: (context, userSettingsProvider, child) {
                   return FutureBuilder<UserSettings?>(

@@ -43,7 +43,7 @@ class _WidgetOrderBottomSheetState extends State<WidgetOrderBottomSheet> {
                 child: Column(
                   children: [
                     const Text(
-                      'Organizar Widgets',
+                      'Organizar Diário',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w300,

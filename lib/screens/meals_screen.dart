@@ -97,10 +97,6 @@ class _MealsScreenState extends State<MealsScreen> {
                     icon: Icon(Icons.calendar_month, color: Colors.black),
                     onPressed: _showDatePicker,
                   ),
-                  IconButton(
-                    icon: Icon(Icons.reorder, color: Colors.black),
-                    onPressed: _showWidgetOrderSheet,
-                  ),
                 ],
               ),
               Expanded(
@@ -170,6 +166,20 @@ class _MealsScreenState extends State<MealsScreen> {
                                 return const SizedBox.shrink();
                             }
                           }).toList(),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 16.0),
+                            child: ElevatedButton.icon(
+                              onPressed: _showWidgetOrderSheet,
+                              label: Text('Customizar Diário'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.transparent,
+                                foregroundColor: Colors.black,
+                                elevation: 0,
+                                side: BorderSide(color: Colors.black, width: 2),
+                                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     );

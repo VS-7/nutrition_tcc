@@ -4,6 +4,7 @@ import '../../providers/user_settings_provider.dart';
 import '../../providers/water_consumption_provider.dart';
 import '../../models/user_settings.dart';
 import '../../models/water_consumption.dart';   
+import '../../dialogs/water_goal_congratulations_dialog.dart';
 
 class WaterTrackerWidget extends StatefulWidget {
   final DateTime selectedDate;
@@ -21,10 +22,8 @@ class _WaterTrackerWidgetState extends State<WaterTrackerWidget> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<WaterConsumptionProvider>(context, listen: false)
-          .selectedDate = widget.selectedDate;
-    });
+    Provider.of<WaterConsumptionProvider>(context, listen: false)
+        .selectedDate = widget.selectedDate;
   }
 
   @override
@@ -194,7 +193,14 @@ class _WaterTrackerWidgetState extends State<WaterTrackerWidget> {
                                                   color: Colors.transparent,
                                                   child: InkWell(
                                                     onTap: () async {
+                                                      final currentWater = consumedWater;
                                                       await waterProvider.addWater(0.25);
+                                                      
+                                                      // Mostra o diálogo APENAS quando acabou de completar
+                                                      if (currentWater < waterGoal && 
+                                                          (currentWater + 0.25) >= waterGoal) {
+                                                        WaterGoalCongratulationsDialog.show(context);
+                                                      }
                                                     },
                                                     borderRadius: BorderRadius.circular(12),
                                                     child: Container(
