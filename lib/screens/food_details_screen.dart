@@ -42,6 +42,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
               _buildFoodInfoContainer(),
               SizedBox(height: 20),
               _buildNutritionInfoContainer(),
+              SizedBox(height: 20),
             ],
           ),
         ),
@@ -192,30 +193,30 @@ Widget _buildFoodInfoContainer() {
 
   Widget _buildNutrientsList() {
     final nutrientsList = [
-      {'Categoria': widget.food.categoria},
-      {'Calorias': widget.food.energia * _quantity / 100},
-      {'Proteína': widget.food.proteina * _quantity / 100},
-      {'Lipídeos': widget.food.lipideos * _quantity / 100},
-      {'Carboidrato': widget.food.carboidrato * _quantity / 100},
-      {'Colesterol': widget.food.colesterol * _quantity / 100},
-      {'Fibra': widget.food.fibra * _quantity / 100},
-      {'Cálcio': widget.food.calcio * _quantity / 100},
-      {'Magnésio': widget.food.magnesio * _quantity / 100},
-      {'Manganês': widget.food.manganes * _quantity / 100},
-      {'Fósforo': widget.food.fosforo * _quantity / 100},
-      {'Ferro': widget.food.ferro * _quantity / 100},
-      {'Sódio': widget.food.sodio * _quantity / 100},
-      {'Potássio': widget.food.potassio * _quantity / 100},
-      {'Cobre': widget.food.cobre * _quantity / 100},
-      {'Zinco': widget.food.zinco * _quantity / 100},
-      {'Retinol': widget.food.retinol * _quantity / 100},
-      {'Riboflavina': widget.food.riboflavina * _quantity / 100},
-      {'Vitamina C': widget.food.vitc * _quantity / 100},
-      {'Vitamina A': widget.food.vita * _quantity / 100},
-      {'Vitamina B1': widget.food.vitb1 * _quantity / 100},
-      {'Vitamina B2': widget.food.vitb2 * _quantity / 100},
-      {'Vitamina B3': widget.food.vitb3 * _quantity / 100},
-      {'Vitamina B6': widget.food.vitb6 * _quantity / 100},
+      {'Categoria': {'value': widget.food.categoria, 'unit': ''}},
+      {'Calorias': {'value': widget.food.energia * _quantity / 100, 'unit': 'kcal'}},
+      {'Proteína': {'value': widget.food.proteina * _quantity / 100, 'unit': 'g'}},
+      {'Lipídeos': {'value': widget.food.lipideos * _quantity / 100, 'unit': 'g'}},
+      {'Carboidrato': {'value': widget.food.carboidrato * _quantity / 100, 'unit': 'g'}},
+      {'Colesterol': {'value': widget.food.colesterol * _quantity / 100, 'unit': 'mg'}},
+      {'Fibra': {'value': widget.food.fibra * _quantity / 100, 'unit': 'g'}},
+      {'Cálcio': {'value': widget.food.calcio * _quantity / 100, 'unit': 'mg'}},
+      {'Magnésio': {'value': widget.food.magnesio * _quantity / 100, 'unit': 'mg'}},
+      {'Manganês': {'value': widget.food.manganes * _quantity / 100, 'unit': 'mg'}},
+      {'Fósforo': {'value': widget.food.fosforo * _quantity / 100, 'unit': 'mg'}},
+      {'Ferro': {'value': widget.food.ferro * _quantity / 100, 'unit': 'mg'}},
+      {'Sódio': {'value': widget.food.sodio * _quantity / 100, 'unit': 'mg'}},
+      {'Potássio': {'value': widget.food.potassio * _quantity / 100, 'unit': 'mg'}},
+      {'Cobre': {'value': widget.food.cobre * _quantity / 100, 'unit': 'mg'}},
+      {'Zinco': {'value': widget.food.zinco * _quantity / 100, 'unit': 'mg'}},
+      {'Retinol': {'value': widget.food.retinol * _quantity / 100, 'unit': 'mcg'}},
+      {'Riboflavina': {'value': widget.food.riboflavina * _quantity / 100, 'unit': 'mg'}},
+      {'Vitamina C': {'value': widget.food.vitc * _quantity / 100, 'unit': 'mg'}},
+      {'Vitamina A': {'value': widget.food.vita * _quantity / 100, 'unit': 'mcg'}},
+      {'Vitamina B1': {'value': widget.food.vitb1 * _quantity / 100, 'unit': 'mg'}},
+      {'Vitamina B2': {'value': widget.food.vitb2 * _quantity / 100, 'unit': 'mg'}},
+      {'Vitamina B3': {'value': widget.food.vitb3 * _quantity / 100, 'unit': 'mg'}},
+      {'Vitamina B6': {'value': widget.food.vitb6 * _quantity / 100, 'unit': 'mg'}},
     ];
 
     return ListView.builder(
@@ -227,22 +228,14 @@ Widget _buildFoodInfoContainer() {
         return ListTile(
           title: Text(entry.key),
           trailing: Text(
-            _formatValue(entry.value),
-            style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
+            entry.key == 'Categoria' 
+                ? entry.value['value'].toString()
+                : '${(entry.value['value'] as double).toStringAsFixed(2)} ${entry.value['unit']}',
+            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
           ),
         );
       },
     );
-  }
-
-  String _formatValue(dynamic value) {
-    if (value is double) {
-      return value.toStringAsFixed(2);
-    } else if (value is int) {
-      return value.toString();
-    } else {
-      return value.toString();
-    }
   }
 
 Widget _buildBottomBar() {

@@ -69,4 +69,8 @@ class TacoMealProvider with ChangeNotifier {
     }
     return weeklyMeals;
   }
+
+  Future<List<TacoMeal>> getMealsByDate(DateTime date) async {
+    return await _tacoMealDao.getMealsByDate(date);
+  }
 }

@@ -276,7 +276,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Container(
-                padding: EdgeInsets.all(20),
+                padding: EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: Colors.grey[200],
                   shape: BoxShape.circle,
@@ -395,6 +395,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 18,
+                fontWeight: FontWeight.w500,
                 color: Colors.black54,
                 height: 1.5,
               ),
