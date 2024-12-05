@@ -64,8 +64,8 @@ class OnboardingService {
 
     // Calcular as metas calóricas para cada refeição
     double breakfastCalorieGoal = calorieGoal * 0.25; // 25% para o café da manhã
-    double lunchCalorieGoal = calorieGoal * 0.30; // 30% para o almoço
-    double dinnerCalorieGoal = calorieGoal * 0.30; // 30% para o jantar
+    double lunchCalorieGoal = calorieGoal * 0.35; // 35% para o almoço
+    double dinnerCalorieGoal = calorieGoal * 0.25; // 25% para o jantar
     double snackCalorieGoal = calorieGoal * 0.15; // 15% para o lanche
 
     // Ajustar a diferença, se houver

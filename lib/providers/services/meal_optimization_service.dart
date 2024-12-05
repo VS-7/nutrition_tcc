@@ -23,7 +23,7 @@ class MealOptimizationService {
       // Otimizar cada refeição separadamente
       final breakfastFoods = _filterFoodsByCategories(foods, ['B', 'F', 'C1']);
       final lunchFoods = _filterFoodsByCategories(foods, ['C2', 'G', 'V', 'P', 'S']);
-      final snackFoods = _filterFoodsByCategories(foods, ['F', 'L', 'B', 'S', 'C1']);
+      final snackFoods = _filterFoodsByCategories(foods, ['F', 'L', 'B', 'C1']);
       final dinnerFoods = _filterFoodsByCategories(foods, ['C2', 'G', 'V', 'P']);
 
       final result = {

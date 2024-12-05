@@ -9,14 +9,14 @@ class GeneticMealOptimizer {
   final Random random = Random();
   
   // Parâmetros do algoritmo genético
-  final int populationSize = 25;
-  final int maxGenerations = 100;
-  final double mutationRate = 0.1;
-  final double crossoverRate = 0.8;
+  final int populationSize = 100;
+  final int maxGenerations = 25;
+  final double mutationRate = 0.4;
+  final double crossoverRate = 0.4;
   
   // Restrições de quantidade por categoria
   final int maxItemsPerCategory = 1; // Máximo de itens por categoria
-  final double maxCaloriesDeviation = 0.1; // 10% de desvio permitido nas calorias
+  final double maxCaloriesDeviation = 0.01; // 1% de desvio permitido nas calorias
 
   GeneticMealOptimizer({
     required this.foods,
@@ -45,6 +45,7 @@ class GeneticMealOptimizer {
         }
       }
 
+      print('Gerando nova população...');
       var newPopulation = <Individual>[];
       newPopulation.addAll(population.take(2)); // Elitismo
       
@@ -60,6 +61,7 @@ class GeneticMealOptimizer {
       population = newPopulation;
     }
 
+    print('Nenhuma solução ideal encontrada após todas as gerações.');
     return {};
   }
 
@@ -113,7 +115,7 @@ class GeneticMealOptimizer {
     Map<String, double> totalNutrients = Map.from(nutritionalTargets);
     totalNutrients.forEach((key, value) => totalNutrients[key] = 0);
 
-    // Verificar restrições de categoria e calcular totais
+    // Calcular totais
     for (int i = 0; i < foods.length; i++) {
       if (individual.quantities[i] > 5) {
         String category = foods[i].categoria;
@@ -139,7 +141,6 @@ class GeneticMealOptimizer {
       return 0;
     }
 
-    // Verificar requisitos mínimos de nutrientes
     double nutrientScore = 0;
     int nutrientsMetCount = 0;
     
@@ -149,17 +150,20 @@ class GeneticMealOptimizer {
         nutrientsMetCount++;
         nutrientScore += 1;
       } else {
-        // Penalidade mais severa para nutrientes abaixo do mínimo
-        nutrientScore += 0.5 * (total / target);
+        // Ajuste na penalidade para manter o score entre 0 e 1
+        nutrientScore += total / target;
       }
     });
 
-    // Bônus para soluções que atendem todos os requisitos mínimos
+    // Normalizar o score para estar entre 0 e 1
+    double normalizedScore = nutrientScore / totalNutrients.length;
+    
+    // Bônus menor para soluções que atendem todos os requisitos
     if (nutrientsMetCount == totalNutrients.length) {
-      nutrientScore *= 1.5;
+      normalizedScore = (normalizedScore + 1) / 2;  // Média entre o score atual e 1
     }
 
-    return nutrientScore / totalNutrients.length;
+    return normalizedScore;  // Agora garantimos que está entre 0 e 1
   }
 
   double _getNutrientValue(OptimizationFood food, String nutrient) {
